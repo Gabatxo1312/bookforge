@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import "components/typography.html" as typography %}
+
+{% block main %}
+{{ typography::heading("New book") }}
+
+<form>
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Author(s)</label>
+    <input type="text" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Owner</label>
+    <select class="form-control">
+      <option>Jean</option>
+      <option>Simon</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Current Holder</label>
+    <select class="form-control">
+      <option></option>
+      <option>Jean</option>
+      <option>Simon</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Comment</label>
+    <textarea class="form-control"></textarea>
+  </div>
+
+  <div class="mt-4 text-center">
+    <input type="submit" value="Create book" class="btn btn-success">
+  </div>
+</form>
+{% endblock %}

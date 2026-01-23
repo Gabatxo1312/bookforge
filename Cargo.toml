@@ -1,0 +1,22 @@
+[package]
+name = "bookforge"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "bookforge"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bookforge"
+path = "src/main.rs"
+
+[dependencies]
+askama = "0.15.1"
+askama_web = { version = "0.15.1", features = ["axum-0.8"] }
+axum = "0.8.8"
+serde = "1.0.228"
+# static-serve = "0.4.0"
+static-serve = { git = "https://github.com/M4SS-Code/static-serve" }
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
+ 

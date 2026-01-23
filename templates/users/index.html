@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "components/typography.html" as typography %}
+
+{% block main %}
+  {{ typography::heading("All users") }}
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Nombre de livres</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Jean</td>
+        <td>34</td>
+        <td>
+          <a href='#' class="btn btn-danger btn-sm">
+            Delete
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Pierre</td>
+        <td>34</td>
+        <td>
+          <a href='#' class="btn btn-danger btn-sm">
+            Delete
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endblock %}

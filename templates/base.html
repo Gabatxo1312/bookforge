@@ -1,0 +1,32 @@
+<html data-bs-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Book Forge{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/css/bootstrap.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+  <link rel="stylesheet" href="/assets/css/fork-awesome.min.css">
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  {% block extra_head %}{% endblock extra_head %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  {% include "layout/header.html" %}
+
+  <main class="container" style="padding-top: 100px;">
+    {% block main %}{% endblock %}
+  </main>
+
+  <footer class="text-center mt-auto pt-4">
+    {% block footer_extra %}
+    {% include "layout/footer.html" %}
+    {% endblock %}
+  </footer>
+
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import "components/typography.html" as typography %}
+
+{% block main %}
+{{ typography::heading("Editer La petite derniere") }}
+
+<form>
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" class="form-control" value="La petite derniere">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Author(s)</label>
+    <input type="text" class="form-control" value="Fatima Daas">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Owner</label>
+    <select class="form-control">
+      <option selected>Jean</option>
+      <option>Simon</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Current Holder</label>
+    <select class="form-control">
+      <option></option>
+      <option>Jean</option>
+      <option selected>Simon</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control">dsjfskdljf</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Comment</label>
+    <textarea class="form-control">sdsfjsdkfjsdklfj</textarea>
+  </div>
+
+  <div class="mt-4 text-center">
+    <input type="submit" value="Create book" class="btn btn-success">
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% macro field(name, value) %}
+<div class="row mt-4">
+  <div class="col-md-3">
+    <p class="mb-0 fw-regular">
+      {{ name }}:
+    </p>
+  </div>
+  <div class="col-md-9">
+    <p class="mb-0">
+      {{ value }}
+    </p>
+  </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "components/typography.html" as typography %}
+{% import "components/dropdown.html" as dropdown %}
+
+{% block main %}
+{{ typography::heading("All books") }}
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Author(s)</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>La petite derniere</td>
+      <td>Fatima Daas</td>
+      <td>Jean</td>
+      <td>
+        {{ dropdown::dropdown_button("Actions", [("Voir", "/books/1"), ("Edit", "/books/1/edit"), ("Delete",
+        "/books/1")]) }}
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>La petite derniere</td>
+      <td>Fatima Daas</td>
+      <td>Jean</td>
+      <td>
+        {{ dropdown::dropdown_button("Actions", [("Voir", "/books/1"), ("Edit", "/books/1/edit"), ("Delete",
+        "/books/1")]) }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}
