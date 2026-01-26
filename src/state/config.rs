@@ -2,8 +2,8 @@ use snafu::prelude::*;
 use tokio::fs::read_to_string;
 
 use camino::Utf8PathBuf;
+use dirs::config_dir;
 use serde::{Deserialize, Serialize};
-use xdg::BaseDirectories;
 
 #[derive(Snafu, Debug)]
 pub enum ConfigError {
@@ -17,6 +17,13 @@ pub enum ConfigError {
         path: Utf8PathBuf,
         source: toml::de::Error,
     },
+    #[snafu(display("Failed parse config : {path}"))]
+    IO {
+        path: Utf8PathBuf,
+        source: std::io::Error,
+    },
+    #[snafu(display("Config is empty: {path}"))]
+    ConfigEmpty { path: Utf8PathBuf },
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -25,11 +32,42 @@ pub struct AppConfig {
     pub database_path: Utf8PathBuf,
 }
 
+impl Default for AppConfig {
+    fn default() -> Self {
+        AppConfig {
+            database_path: Self::default_sqlite_path(),
+        }
+    }
+}
+
 impl AppConfig {
     pub async fn new() -> Result<Self, ConfigError> {
-        // TODO: Remove this
-        let path = Utf8PathBuf::from("/home/torrpenn/projects/Gabatxo1312/bookforge/config.toml");
+        let path = Self::config_file_path();
 
+        let file_exist = tokio::fs::try_exists(&path)
+            .await
+            .context(IOSnafu { path: path.clone() })?;
+
+        if file_exist {
+            Self::parse(path).await
+        } else {
+            // Create parent and create an empty config file
+            let parent_path = path.parent().unwrap();
+            tokio::fs::create_dir_all(&parent_path)
+                .await
+                .context(IOSnafu { path: parent_path })?;
+            tokio::fs::write(
+                path.clone(),
+                toml::to_string(&AppConfig::default()).unwrap(),
+            )
+            .await
+            .context(IOSnafu { path: path.clone() })?;
+
+            Ok(AppConfig::default())
+        }
+    }
+
+    async fn parse(path: Utf8PathBuf) -> Result<Self, ConfigError> {
         let content = read_to_string(&path).await.context(FailedReadConfigSnafu {
             path: path.to_path_buf(),
         })?;
@@ -39,13 +77,18 @@ impl AppConfig {
         })
     }
 
-    pub fn xdg_base_directories() -> BaseDirectories {
-        BaseDirectories::with_prefix("bookforge")
+    fn config_path() -> Utf8PathBuf {
+        let mut config_dir = Utf8PathBuf::from_path_buf(config_dir().unwrap()).unwrap();
+        config_dir.push("bookforge");
+
+        return config_dir;
+    }
+
+    fn config_file_path() -> Utf8PathBuf {
+        Self::config_path().join("BookForge.toml")
     }
 
     pub fn default_sqlite_path() -> Utf8PathBuf {
-        let config_dir = Self::xdg_base_directories().get_config_home().unwrap();
-
-        Utf8PathBuf::from_path_buf(config_dir).unwrap()
+        Self::config_path().join("db.sqlite")
     }
 }

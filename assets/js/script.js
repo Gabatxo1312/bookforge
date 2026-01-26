@@ -8,7 +8,7 @@ function getCookie(name) {
 
 const DEFAULT_THEME = 'light'
 
-window.addEventListener('load', (e) => {
+window.addEventListener('load', (_e) => {
   let theme = getCookie('theme');
 
   if (theme) {
