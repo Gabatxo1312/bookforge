@@ -19,4 +19,8 @@ serde = "1.0.228"
 # static-serve = "0.4.0"
 static-serve = { git = "https://github.com/M4SS-Code/static-serve" }
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
- 
+sea-orm = { version = "2.0.0-rc", features = [ "runtime-tokio", "debug-print", "sqlx-sqlite"] }
+camino = { version = "1.2.2", features = [ "serde1" ] }
+toml = { version = "0.9.11", features = ["preserve_order"] }
+snafu = "0.8.9"
+xdg = "3.0.0"

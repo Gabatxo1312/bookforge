@@ -1,10 +1,13 @@
 use axum::{Router, routing::get};
 use static_serve::embed_assets;
 
-mod error;
-mod routes;
+use crate::state::AppState;
 
-pub fn build_app() -> Router {
+mod routes;
+pub mod state;
+
+pub fn build_app(state: AppState) -> Router {
+    println!("{:?}", state);
     embed_assets!("assets", compress = true);
 
     Router::new()
@@ -14,4 +17,5 @@ pub fn build_app() -> Router {
         .route("/books/new", get(routes::book::new))
         .route("/users", get(routes::user::index))
         .nest("/assets", static_router())
+        .with_state(state)
 }

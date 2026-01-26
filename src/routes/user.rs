@@ -1,7 +1,7 @@
 use askama::Template;
 use askama_web::WebTemplate;
 
-use crate::error::AppStateError;
+use crate::state::error::AppStateError;
 
 #[derive(Template, WebTemplate)]
 #[template(path = "users/index.html")]

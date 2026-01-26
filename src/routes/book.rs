@@ -2,7 +2,7 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::extract::Path;
 
-use crate::error::AppStateError;
+use crate::state::error::AppStateError;
 
 #[derive(Template, WebTemplate)]
 #[template(path = "index.html")]
