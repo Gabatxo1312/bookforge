@@ -1,57 +1,196 @@
+use std::collections::HashMap;
+
 use askama::Template;
 use askama_web::WebTemplate;
-use axum::extract::Path;
+use axum::{
+    Form,
+    extract::{Path, State},
+    response::{IntoResponse, Redirect},
+};
+use serde::Deserialize;
+use serde_with::{NoneAsEmptyString, serde_as};
+use snafu::prelude::*;
 
-use crate::state::error::AppStateError;
+use crate::models::book::Model as BookModel;
+use crate::models::user::Model as UserModel;
+
+use crate::{
+    models::{book::BookOperator, user::UserOperator},
+    state::{
+        AppState,
+        error::{AppStateError, BookSnafu, UserSnafu},
+    },
+};
 
 #[derive(Template, WebTemplate)]
 #[template(path = "index.html")]
-struct BookIndexTemplate {}
+struct BookIndexTemplate {
+    books_with_user: Vec<BookWithUser>,
+}
 
-pub async fn index() -> Result<impl axum::response::IntoResponse, AppStateError> {
-    if 0 > 1 {
-        return Err(AppStateError::Error);
+// Book list with the owner and the current holder inside
+struct BookWithUser {
+    pub book: BookModel,
+    pub owner: UserModel,
+    pub current_holder: Option<UserModel>,
+}
+
+pub async fn index(
+    State(state): State<AppState>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let users = UserOperator::new(state.clone())
+        .list()
+        .await
+        .context(UserSnafu)?;
+    let books = BookOperator::new(state).list().await.context(BookSnafu)?;
+
+    let user_by_id: HashMap<i32, UserModel> =
+        users.into_iter().map(|user| (user.id, user)).collect();
+
+    let mut result: Vec<BookWithUser> = Vec::with_capacity(books.len());
+
+    for book in books {
+        let owner = user_by_id.get(&book.owner_id).cloned().unwrap();
+        let current_holder = if let Some(current_holder_id) = book.current_holder_id {
+            user_by_id.get(&current_holder_id).cloned()
+        } else {
+            None
+        };
+
+        result.push(BookWithUser {
+            book,
+            owner,
+            current_holder,
+        });
     }
 
-    Ok(BookIndexTemplate {})
+    Ok(BookIndexTemplate {
+        books_with_user: result,
+    })
 }
 
 #[derive(Template, WebTemplate)]
 #[template(path = "books/show.html")]
-struct ShowBookTemplate {}
+struct ShowBookTemplate {
+    book: BookModel,
+    owner: UserModel,
+    current_holder: Option<UserModel>,
+}
 
 pub async fn show(
-    Path(_id): Path<i32>,
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    if 0 > 1 {
-        return Err(AppStateError::Error);
-    }
+    let book = BookOperator::new(state.clone())
+        .find_by_id(id)
+        .await
+        .context(BookSnafu)?;
 
-    Ok(ShowBookTemplate {})
+    let owner = UserOperator::new(state.clone())
+        .find_by_id(book.owner_id)
+        .await
+        .context(UserSnafu)?;
+
+    let current_holder: Option<UserModel> = if let Some(current_holder_id) = book.current_holder_id
+    {
+        Some(
+            UserOperator::new(state.clone())
+                .find_by_id(current_holder_id)
+                .await
+                .context(UserSnafu)?,
+        )
+    } else {
+        None
+    };
+
+    Ok(ShowBookTemplate {
+        book,
+        owner,
+        current_holder,
+    })
+}
+
+#[serde_as]
+#[derive(Deserialize)]
+pub struct BookForm {
+    pub title: String,
+    pub authors: String,
+    pub owner_id: i32,
+    pub description: Option<String>,
+    pub comment: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub current_holder_id: Option<i32>,
+}
+
+pub async fn create(
+    State(state): State<AppState>,
+    Form(form): Form<BookForm>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let _ = BookOperator::new(state)
+        .create(form)
+        .await
+        .context(BookSnafu)?;
+
+    Ok(Redirect::to("/").into_response())
 }
 
 #[derive(Template, WebTemplate)]
 #[template(path = "books/new.html")]
-struct NewBookTemplate {}
+struct NewBookTemplate {
+    users: Vec<UserModel>,
+}
 
-pub async fn new() -> Result<impl axum::response::IntoResponse, AppStateError> {
-    if 0 > 1 {
-        return Err(AppStateError::Error);
-    }
+pub async fn new(
+    State(state): State<AppState>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let users = UserOperator::new(state).list().await.context(UserSnafu)?;
 
-    Ok(NewBookTemplate {})
+    Ok(NewBookTemplate { users })
 }
 
 #[derive(Template, WebTemplate)]
 #[template(path = "books/edit.html")]
-struct EditBookTemplate {}
+struct EditBookTemplate {
+    users: Vec<UserModel>,
+    book: BookModel,
+}
 
 pub async fn edit(
-    Path(_id): Path<i32>,
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    if 0 > 1 {
-        return Err(AppStateError::Error);
-    }
+    let users = UserOperator::new(state.clone())
+        .list()
+        .await
+        .context(UserSnafu)?;
+    let book = BookOperator::new(state)
+        .find_by_id(id)
+        .await
+        .context(BookSnafu)?;
 
-    Ok(EditBookTemplate {})
+    Ok(EditBookTemplate { users, book })
+}
+
+pub async fn update(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+    Form(form): Form<BookForm>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let _ = BookOperator::new(state)
+        .update(id, form)
+        .await
+        .context(BookSnafu)?;
+
+    Ok(Redirect::to(&format!("/books/{}", id)).into_response())
+}
+pub async fn delete(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let _ = BookOperator::new(state)
+        .delete(id)
+        .await
+        .context(BookSnafu)?;
+
+    Ok(Redirect::to("/").into_response())
 }

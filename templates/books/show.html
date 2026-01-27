@@ -2,30 +2,42 @@
 {% import "components/typography.html" as typography %}
 {% import "components/dropdown.html" as dropdown %}
 {% import "components/fields.html" as fields %}
+{% import "components/cards.html" as cards %}
 
 {% block main %}
-{% call typography::heading("La petite derniere") %}
-{{ dropdown::dropdown_button("Actions", [("Edit", "/books/1/edit"), ("Delete", "/books/1")]) }}
-{% endcall %}
+  {{ typography::book_heading(book.title, book, show = false) }}
 
-<div class="mt-4">
-  <h5 class="mt-4 fw-bold">Book details</h5>
-  {{ fields::field("Name", "La petite derniere") }}
-  {{ fields::field("Authors", "Fatima Daas") }}
-  {{ fields::field("Authors", "Je m’appelle Fatima Daas. Je suis la mazoziya, la petite dernière. Celle à laquelle on ne
-  s’est pas préparé. Française d’origine algérienne. Musulmane pratiquante. Clichoise qui passe plus de trois heures par
-  jour dans les transports. Une touriste. Une banlieusarde qui observe les comportements parisiens. Je suis une
-  menteuse, une pécheresse. Adolescente, je suis une élève instable. Adulte, je suis hyper-inadaptée. J’écris des
-  histoires pour éviter de vivre la mienne. J’ai fait quatre ans de thérapie. C’est ma plus longue relation. L’amour,
-  c’était tabou à la maison, les marques de tendresse, la sexualité aussi. Je me croyais polyamoureuse. Lorsque Nina a
-  débarqué dans ma vie, je ne savais plus du tout ce dont j’avais besoin et ce qu’il me manquait. Je m’appelle Fatima
-  Daas. Je ne sais pas si je porte bien mon prénom.") }}
+  {% call cards::card() %}
+    <div class="mt-4">
+      <h5 class="mt-4 fw-bold">Book details</h5>
+      {{ fields::field("Name", book.title) }}
+      {{ fields::field("Authors", book.authors) }}
 
-  <h5 class="mt-50px fw-bold">User Details</h5>
-  {{ fields::field("Owner", "Jean") }}
-  {{ fields::field("Current Holder", "Pierre") }}
+      {% match book.description %}
+      {% when Some with (description) %}
+        {{ fields::field("Description", description) }}
+      {% when None %}
+        {{ fields::field("Description", "-") }}
+      {% endmatch %}
 
-  <h5 class="mt-50px fw-bold">More Informations</h5>
-  {{ fields::field("Comment", "J'adore ce livre ca parle de plein de choses !") }}
-</div>
+      <h5 class="mt-50px fw-bold">User Details</h5>
+      {{ fields::field("Owner", owner.name) }}
+
+      {% match current_holder %}
+      {% when Some with (current_holder) %}
+        {{ fields::field("Current Holder", current_holder.name) }}
+      {% when None %}
+        {{ fields::field("Current Holder", "-") }}
+      {% endmatch %}
+
+
+      <h5 class="mt-50px fw-bold">More Informations</h5>
+      {% match book.comment %}
+      {% when Some with (comment) %}
+        {{ fields::field("Comment", comment) }}
+      {% when None %}
+        {{ fields::field("Comment", "-") }}
+      {% endmatch %}
+    </div>
+  {% endcall %}
 {% endblock %}

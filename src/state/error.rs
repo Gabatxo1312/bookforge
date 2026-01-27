@@ -3,7 +3,10 @@ use askama_web::WebTemplate;
 use axum::response::{IntoResponse, Response};
 use snafu::prelude::*;
 
-use crate::{models::user::UserError, state::config::ConfigError};
+use crate::{
+    models::{book::BookError, user::UserError},
+    state::config::ConfigError,
+};
 
 #[derive(Template, WebTemplate)]
 #[template(path = "error.html")]
@@ -28,6 +31,10 @@ pub enum AppStateError {
     #[snafu(display("User Model Error"))]
     User {
         source: UserError,
+    },
+    #[snafu(display("Book Model Error"))]
+    Book {
+        source: BookError,
     },
 }
 

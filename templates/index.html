@@ -1,41 +1,44 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
 {% import "components/dropdown.html" as dropdown %}
+{% import "components/cards.html" as cards %}
 
 {% block main %}
-{{ typography::heading("All books") }}
+  {{ typography::heading("All books") }}
 
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Name</th>
-      <th scope="col">Author(s)</th>
-      <th scope="col">Owner</th>
-      <th scope="col">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>La petite derniere</td>
-      <td>Fatima Daas</td>
-      <td>Jean</td>
-      <td>
-        {{ dropdown::dropdown_button("Actions", [("Voir", "/books/1"), ("Edit", "/books/1/edit"), ("Delete",
-        "/books/1")]) }}
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>La petite derniere</td>
-      <td>Fatima Daas</td>
-      <td>Jean</td>
-      <td>
-        {{ dropdown::dropdown_button("Actions", [("Voir", "/books/1"), ("Edit", "/books/1/edit"), ("Delete",
-        "/books/1")]) }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+  {% call cards::card() %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Author(s)</th>
+          <th scope="col">Owner</th>
+          <th scope="col">Current Holder</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book_with_user in books_with_user %}
+        <tr>
+          <th scope="row">{{ book_with_user.book.id }}</th>
+          <td>{{ book_with_user.book.title }}</td>
+          <td>{{ book_with_user.book.authors }}</td>
+          <td>{{ book_with_user.owner.name }}</td>
+          <td>
+            {% match book_with_user.current_holder %}
+            {% when Some with (current_holder) %}
+              {{ current_holder.name }}
+            {% when None %}
+              -
+            {% endmatch %}
+          </td>
+          <td>
+            {{ dropdown::book_dropdown_button(book_with_user.book) }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endcall %}
 {% endblock %}

@@ -1,6 +1,6 @@
 use axum::{
     Router,
-    routing::{delete, get, post},
+    routing::{get, post},
 };
 use static_serve::embed_assets;
 
@@ -16,7 +16,10 @@ pub fn build_app(state: AppState) -> Router {
 
     Router::new()
         .route("/", get(routes::book::index))
+        .route("/books", post(routes::book::create))
         .route("/books/{id}", get(routes::book::show))
+        .route("/books/{id}", post(routes::book::update))
+        .route("/books/{id}/delete", post(routes::book::delete))
         .route("/books/{id}/edit", get(routes::book::edit))
         .route("/books/new", get(routes::book::new))
         .route("/users", get(routes::user::index))

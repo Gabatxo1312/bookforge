@@ -1,39 +1,46 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
+{% import "components/cards.html" as cards %}
 
 {% block main %}
-{{ typography::heading("All users") }}
+  {{ typography::heading("All users") }}
 
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Name</th>
-      <th scope="col">Nombre de livres</th>
-      <th scope="col">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in users %}
-    <tr>
-      <th scope="row">{{ user.id }}</th>
-      <td>{{ user.name }}</td>
-      <td>10</td>
-      <td>
-        <form method="post" action="/users/{{ user.id }}">
-          <input value="Delete" type="submit" class="btn btn-danger btn-sm">
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  {% call cards::card() %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Owner book</th>
+          <th scope="col">Borrowed book</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for (user, book_size, borrowed_book) in user_with_books_number %}
+          <tr>
+            <th scope="row">{{ user.id }}</th>
+            <td>{{ user.name }}</td>
+            <td>{{ book_size }}</td>
+            <td>{{ borrowed_book }}</td>
+            <td>
+              <form method="post" action="/users/{{ user.id }}">
+                <input value="Delete" type="submit" class="btn btn-danger btn-sm">
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endcall %}
 
-<form action="/users" method="post">
-  <label class="form-label">Name</label>
-  <input type="text" name="name" class="form-control">
+  {% call cards::card() %}
+    <form action="/users" method="post">
+      <label class="form-label">Name</label>
+      <input type="text" name="name" class="form-control">
 
-  <input type="submit" value="Create user" class="btn btn-success mt-3">
-</form>
+      <input type="submit" value="Create user" class="btn btn-success mt-3">
+    </form>
+  {% endcall %}
 
 {% endblock %}

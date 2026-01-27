@@ -13,8 +13,15 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
-    // #[sea_orm(has_many)]
-    // pub book: HasMany<super::profile::Entity>,
+    // #[sea_orm(has_many, relation_enum = "Owner", from = "id", to = "owner_id")]
+    // pub books: HasMany<super::book::Entity>,
+    // #[sea_orm(
+    //     has_many,
+    //     relation_enum = "CurrentHolder",
+    //     from = "id",
+    //     to = "current_holder_id"
+    // )]
+    // pub books_borrowed: HasMany<super::book::Entity>,
 }
 
 #[async_trait::async_trait]
@@ -27,6 +34,8 @@ pub enum UserError {
     // NotFound { path: String },
     #[snafu(display("Database error"))]
     DB { source: sea_orm::DbErr },
+    #[snafu(display("User with id {id} not found"))]
+    NotFound { id: i32 },
 }
 
 #[derive(Debug)]
@@ -41,6 +50,19 @@ impl UserOperator {
 
     pub async fn list(&self) -> Result<Vec<Model>, UserError> {
         Entity::find().all(&self.state.db).await.context(DBSnafu)
+    }
+
+    pub async fn find_by_id(&self, id: i32) -> Result<Model, UserError> {
+        let user: Option<Model> = Entity::find_by_id(id)
+            .one(&self.state.db)
+            .await
+            .context(DBSnafu)?;
+
+        if let Some(user) = user {
+            Ok(user)
+        } else {
+            Err(UserError::NotFound { id })
+        }
     }
 
     pub async fn create(&self, form: UserForm) -> Result<Model, UserError> {

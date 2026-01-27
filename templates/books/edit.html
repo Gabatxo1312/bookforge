@@ -1,49 +1,79 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
+{% import "components/cards.html" as cards %}
 
 {% block main %}
-{{ typography::heading("Editer La petite derniere") }}
+  {{ typography::heading("Editer") }}
 
-<form>
-  <div class="mb-3">
-    <label class="form-label">Name</label>
-    <input type="text" class="form-control" value="La petite derniere">
-  </div>
+  {% call cards::card() %}
+    <form method="post" action="/books/{{ book.id }}">
+      <div class="mb-3">
+        <label class="form-label" for="title">Name</label>
+        <input type="text" name="title" class="form-control" value="{{ book.title }}" required>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Author(s)</label>
-    <input type="text" class="form-control" value="Fatima Daas">
-  </div>
+      <div class="mb-3">
+        <label for="authors" class="form-label">Author(s)</label>
+        <input type="text" name="authors" class="form-control" value="{{ book.authors }}" required>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Owner</label>
-    <select class="form-control">
-      <option selected>Jean</option>
-      <option>Simon</option>
-    </select>
-  </div>
+      <div class="mb-3">
+        <label for="owner_id" class="form-label">Owner</label>
+        <select name="owner_id" class="form-control" required>
+          {% for user in users %}
+            {% if book.owner_id == user.id %}
+              <option value="{{ user.id }}" selected>{{ user.name }}</option>
+            {% else %}
+              <option value="{{ user.id }}">{{ user.name }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Current Holder</label>
-    <select class="form-control">
-      <option></option>
-      <option>Jean</option>
-      <option selected>Simon</option>
-    </select>
-  </div>
+      <div class="mb-3">
+        <label for="current_holder_id" class="form-label">Current Holder</label>
+        <select class="form-control" name="current_holder_id">
+          <option></option>
+          {% match book.current_holder_id %}
+          {% when Some with (current_holder_id) %}
+            {% for user in users %}
+              {% if *current_holder_id == user.id %}
+                <option value="{{ user.id }}" selected>{{ user.name }}</option>
+              {% else %}
+                <option value="{{ user.id }}">{{ user.name }}</option>
+              {% endif %}
+            {% endfor %}
+          {% when None %}
+            {% for user in users %}
+              <option value="{{ user.id }}">{{ user.name }}</option>
+            {% endfor %}
+          {% endmatch %}
+        </select>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Description</label>
-    <textarea class="form-control">dsjfskdljf</textarea>
-  </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+          {% match book.description %}
+          {% when Some with (description) %}
+            <textarea name="description" class="form-control">{{ description }}</textarea>
+          {% when None %}
+            <textarea name="description" class="form-control"></textarea>
+          {% endmatch %}
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Comment</label>
-    <textarea class="form-control">sdsfjsdkfjsdklfj</textarea>
-  </div>
+      <div class="mb-3">
+        <label class="form-label" for="comment">Comment</label>
+        {% match book.comment %}
+        {% when Some with (comment) %}
+          <textarea name="comment" class="form-control">{{ comment }}</textarea>
+        {% when None %}
+          <textarea name="comment" class="form-control"></textarea>
+        {% endmatch %}
+      </div>
 
-  <div class="mt-4 text-center">
-    <input type="submit" value="Create book" class="btn btn-success">
-  </div>
-</form>
+      <div class="mt-4 text-center">
+        <input type="submit" value="Edit book" class="btn btn-success">
+      </div>
+    </form>
+  {% endcall %}
 {% endblock %}

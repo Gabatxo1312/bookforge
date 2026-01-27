@@ -1,49 +1,54 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
+{% import "components/cards.html" as cards %}
 
 {% block main %}
-{{ typography::heading("New book") }}
+  {{ typography::heading("New book") }}
 
-<form>
-  <div class="mb-3">
-    <label class="form-label">Name</label>
-    <input type="text" class="form-control">
-  </div>
+  {% call cards::card() %}
+    <form method="post" action="/books">
+      <div class="mb-3">
+        <label for="title" class="form-label">Name</label>
+        <input type="text" name="title" class="form-control" required>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Author(s)</label>
-    <input type="text" class="form-control">
-  </div>
+      <div class="mb-3">
+        <label for="authors" class="form-label">Author(s)</label>
+        <input type="text" name="authors" class="form-control" required>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Owner</label>
-    <select class="form-control">
-      <option>Jean</option>
-      <option>Simon</option>
-    </select>
-  </div>
+      <div class="mb-3">
+        <label for="owner_id" class="form-label">Owner</label>
+        <select name="owner_id" class="form-control" required>
+          {% for user in users %}
+          <option value="{{ user.id }}">{{ user.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Current Holder</label>
-    <select class="form-control">
-      <option></option>
-      <option>Jean</option>
-      <option>Simon</option>
-    </select>
-  </div>
+      <div class="mb-3">
+        <label for="current_holder_id" class="form-label">Current Holder</label>
+        <select name="current_holder_id" class="form-control">
+          <option></option>
+          {% for user in users %}
+            <option value="{{ user.id }}">{{ user.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Description</label>
-    <textarea class="form-control"></textarea>
-  </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea name="description" class="form-control"></textarea>
+      </div>
 
-  <div class="mb-3">
-    <label class="form-label">Comment</label>
-    <textarea class="form-control"></textarea>
-  </div>
+      <div class="mb-3">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea name="comment" class="form-control"></textarea>
+      </div>
 
-  <div class="mt-4 text-center">
-    <input type="submit" value="Create book" class="btn btn-success">
-  </div>
-</form>
+      <div class="mt-4 text-center">
+        <input type="submit" value="Create book" class="btn btn-success">
+      </div>
+    </form>
+  {% endcall %}
 {% endblock %}
