@@ -6,7 +6,7 @@ use bookforge::build_app;
 use bookforge::state::AppState;
 
 #[derive(Snafu, Debug)]
-enum AppError {
+pub enum AppError {
     #[snafu(display("Failed to initialize AppState"))]
     State {
         source: AppStateError,
@@ -16,8 +16,9 @@ enum AppError {
 
 async fn main_inner() -> Result<(), AppError> {
     pretty_env_logger::init();
+    let app_state = AppState::new().await.context(StateSnafu)?;
 
-    let app = build_app(AppState::new().await.context(StateSnafu)?);
+    let app = build_app(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
 

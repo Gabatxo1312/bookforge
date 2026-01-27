@@ -3,7 +3,7 @@ use askama_web::WebTemplate;
 use axum::response::{IntoResponse, Response};
 use snafu::prelude::*;
 
-use crate::state::config::ConfigError;
+use crate::{models::user::UserError, state::config::ConfigError};
 
 #[derive(Template, WebTemplate)]
 #[template(path = "error.html")]
@@ -20,6 +20,14 @@ pub enum AppStateError {
     #[snafu(display("Config Error"))]
     ConfigError {
         source: ConfigError,
+    },
+    #[snafu(display("Migration Error"))]
+    Migration {
+        source: sea_orm::error::DbErr,
+    },
+    #[snafu(display("User Model Error"))]
+    User {
+        source: UserError,
     },
 }
 
