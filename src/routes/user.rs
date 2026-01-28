@@ -36,7 +36,7 @@ pub async fn index(
         .context(UserSnafu)?;
 
     let books = BookOperator::new(state.clone())
-        .list(None)
+        .list()
         .await
         .context(BookSnafu)?;
 
