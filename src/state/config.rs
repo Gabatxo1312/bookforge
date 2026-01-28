@@ -5,6 +5,8 @@ use camino::Utf8PathBuf;
 use dirs::config_dir;
 use serde::{Deserialize, Serialize};
 
+use crate::state::listener::Listener;
+
 #[derive(Snafu, Debug)]
 pub enum ConfigError {
     #[snafu(display("File doesn't exist at path : {path}"))]
@@ -30,12 +32,14 @@ pub enum ConfigError {
 pub struct AppConfig {
     #[serde(default = "AppConfig::default_sqlite_path")]
     pub database_path: Utf8PathBuf,
+    pub listener: Listener,
 }
 
 impl Default for AppConfig {
     fn default() -> Self {
         AppConfig {
             database_path: Self::default_sqlite_path(),
+            listener: Listener::default(),
         }
     }
 }

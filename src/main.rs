@@ -1,4 +1,5 @@
 use bookforge::state::error::AppStateError;
+use bookforge::state::listener::ListenerError;
 use snafu::ErrorCompat;
 use snafu::prelude::*;
 
@@ -11,6 +12,10 @@ pub enum AppError {
     State {
         source: AppStateError,
     },
+    #[snafu(display("Listener Error"))]
+    Listener {
+        source: ListenerError,
+    },
     Error,
 }
 
@@ -18,9 +23,14 @@ async fn main_inner() -> Result<(), AppError> {
     pretty_env_logger::init();
     let app_state = AppState::new().await.context(StateSnafu)?;
 
-    let app = build_app(app_state);
+    let app = build_app(app_state.clone());
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    let addr = app_state
+        .config
+        .listener
+        .socket_addr()
+        .context(ListenerSnafu)?;
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
 
     let _ = axum::serve(listener, app).await;
 
