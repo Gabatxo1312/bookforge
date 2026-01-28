@@ -4,7 +4,7 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::{
     Form,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     response::{IntoResponse, Redirect},
 };
 use serde::Deserialize;
@@ -22,12 +22,6 @@ use crate::{
     },
 };
 
-#[derive(Template, WebTemplate)]
-#[template(path = "index.html")]
-struct BookIndexTemplate {
-    books_with_user: Vec<BookWithUser>,
-}
-
 // Book list with the owner and the current holder inside
 struct BookWithUser {
     pub book: BookModel,
@@ -35,37 +29,64 @@ struct BookWithUser {
     pub current_holder: Option<UserModel>,
 }
 
+#[serde_as]
+#[derive(Deserialize, Clone)]
+pub struct BookQuery {
+    pub title: Option<String>,
+    pub authors: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub owner_id: Option<i32>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub current_holder_id: Option<i32>,
+}
+
+#[derive(Template, WebTemplate)]
+#[template(path = "index.html")]
+struct BookIndexTemplate {
+    books_with_user: Vec<BookWithUser>,
+    query: BookQuery,
+    users: Vec<UserModel>,
+}
+
 pub async fn index(
     State(state): State<AppState>,
+    Query(query): Query<BookQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
     let users = UserOperator::new(state.clone())
         .list()
         .await
         .context(UserSnafu)?;
-    let books = BookOperator::new(state).list().await.context(BookSnafu)?;
+    let books = BookOperator::new(state)
+        .list(Some(query.clone()))
+        .await
+        .context(BookSnafu)?;
 
-    let user_by_id: HashMap<i32, UserModel> =
-        users.into_iter().map(|user| (user.id, user)).collect();
+    let user_by_id: HashMap<i32, UserModel> = users
+        .clone()
+        .into_iter()
+        .map(|user| (user.id, user))
+        .collect();
 
-    let mut result: Vec<BookWithUser> = Vec::with_capacity(books.len());
+    let result: Vec<BookWithUser> = books
+        .into_iter()
+        .filter_map(|book| {
+            let owner = user_by_id.get(&book.owner_id).cloned()?;
+            let current_holder = book
+                .current_holder_id
+                .and_then(|id| user_by_id.get(&id).cloned());
 
-    for book in books {
-        let owner = user_by_id.get(&book.owner_id).cloned().unwrap();
-        let current_holder = if let Some(current_holder_id) = book.current_holder_id {
-            user_by_id.get(&current_holder_id).cloned()
-        } else {
-            None
-        };
-
-        result.push(BookWithUser {
-            book,
-            owner,
-            current_holder,
-        });
-    }
+            Some(BookWithUser {
+                book,
+                owner,
+                current_holder,
+            })
+        })
+        .collect();
 
     Ok(BookIndexTemplate {
         books_with_user: result,
+        query,
+        users,
     })
 }
 

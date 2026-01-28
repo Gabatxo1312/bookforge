@@ -1,4 +1,5 @@
 use sea_orm::ActiveValue::Set;
+use sea_orm::Condition;
 use sea_orm::DeleteResult;
 use sea_orm::QueryOrder;
 use sea_orm::entity::prelude::*;
@@ -6,6 +7,7 @@ use snafu::ResultExt;
 use snafu::prelude::*;
 
 use crate::routes::book::BookForm;
+use crate::routes::book::BookQuery;
 use crate::state::AppState;
 use crate::state::error::BookSnafu;
 
@@ -56,8 +58,28 @@ impl BookOperator {
         Self { state }
     }
 
-    pub async fn list(&self) -> Result<Vec<Model>, BookError> {
+    pub async fn list(&self, query: Option<BookQuery>) -> Result<Vec<Model>, BookError> {
+        let mut conditions = Condition::all();
+        if let Some(book_query) = query {
+            if let Some(title) = book_query.title {
+                conditions = conditions.add(Column::Title.contains(&title));
+            }
+
+            if let Some(authors) = book_query.authors {
+                conditions = conditions.add(Column::Authors.contains(&authors));
+            }
+
+            if let Some(owner_id) = book_query.owner_id {
+                conditions = conditions.add(Column::OwnerId.eq(owner_id));
+            }
+
+            if let Some(current_holder_id) = book_query.current_holder_id {
+                conditions = conditions.add(Column::CurrentHolderId.eq(current_holder_id));
+            }
+        }
+
         Entity::find()
+            .filter(conditions)
             .order_by_desc(Column::Id)
             .all(&self.state.db)
             .await
