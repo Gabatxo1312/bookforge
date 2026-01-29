@@ -22,7 +22,7 @@
       </thead>
       <tbody>
         {% for user_information in user_with_books_number %}
-          <tr>
+          <tr class="align-middle">
             <th scope="row">{{ user_information.user.id }}</th>
             <td>{{ user_information.user.name }}</td>
             <td>{{ user_information.owner_book_number }}</td>
