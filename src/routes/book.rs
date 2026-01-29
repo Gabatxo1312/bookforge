@@ -29,6 +29,7 @@ struct BookWithUser {
     pub current_holder: Option<UserModel>,
 }
 
+/// Query for filter search query
 #[serde_as]
 #[derive(Deserialize, Clone)]
 pub struct BookQuery {
@@ -52,21 +53,26 @@ pub async fn index(
     State(state): State<AppState>,
     Query(query): Query<BookQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    // Get all Users
     let users = UserOperator::new(state.clone())
         .list()
         .await
         .context(UserSnafu)?;
+    // Get all Book filtered with query
     let books = BookOperator::new(state)
         .list(Some(query.clone()))
         .await
         .context(BookSnafu)?;
 
+    // Mapping between an user_id and user used in result to
+    // get easily user with his id
     let user_by_id: HashMap<i32, UserModel> = users
         .clone()
         .into_iter()
         .map(|user| (user.id, user))
         .collect();
 
+    // Build object of Book with his relation Owner (User) and current_holder (User)
     let result: Vec<BookWithUser> = books
         .into_iter()
         .filter_map(|book| {
@@ -131,6 +137,7 @@ pub async fn show(
     })
 }
 
+/// Form to build a new book or an update
 #[serde_as]
 #[derive(Deserialize)]
 pub struct BookForm {

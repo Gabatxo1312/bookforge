@@ -40,24 +40,29 @@ impl ActiveModelBehavior for ActiveModel {}
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub))]
 pub enum BookError {
-    // #[snafu(display("The Content Folder (Path: {path}) does not exist"))]
-    // NotFound { path: String },
+    /// Db Error from SeaOrm
     #[snafu(display("Database error"))]
     DB { source: sea_orm::DbErr },
+    /// When Book with Id is not found
     #[snafu(display("Book with id {id} not found"))]
     NotFound { id: i32 },
 }
 
 #[derive(Debug)]
+/// Operator for the CRUD on Book Model
 pub struct BookOperator {
     pub state: AppState,
 }
 
 impl BookOperator {
+    /// Creates a new `BookOperator` with the given application state.
     pub fn new(state: AppState) -> Self {
         Self { state }
     }
 
+    /// Lists all books matching the optional query filters.
+    ///
+    /// Results are ordered by ID in descending order (newest first).
     pub async fn list(&self, query: Option<BookQuery>) -> Result<Vec<Model>, BookError> {
         let mut conditions = Condition::all();
         if let Some(book_query) = query {
@@ -86,6 +91,10 @@ impl BookOperator {
             .context(DBSnafu)
     }
 
+    /// Finds a book by its ID.
+    ///
+    /// # Errors
+    /// Returns `BookError::NotFound` if no book exists with the given ID.
     pub async fn find_by_id(&self, id: i32) -> Result<Model, BookError> {
         let book_by_id = Entity::find_by_id(id)
             .one(&self.state.db)
@@ -99,6 +108,7 @@ impl BookOperator {
         }
     }
 
+    /// Creates a new book from the given form data.
     pub async fn create(&self, form: BookForm) -> Result<Model, BookError> {
         let book = ActiveModel {
             title: Set(form.title.clone()),
@@ -113,6 +123,10 @@ impl BookOperator {
         book.insert(&self.state.db).await.context(DBSnafu)
     }
 
+    /// Update a book (find with ID) from the given form data
+    ///
+    /// # Error
+    /// Returns BookError::NotFound if id is not found in database
     pub async fn update(&self, id: i32, form: BookForm) -> Result<Model, BookError> {
         let book_by_id = Self::find_by_id(&self, id).await.context(BookSnafu);
 
@@ -132,6 +146,7 @@ impl BookOperator {
         }
     }
 
+    /// Delete a book (find with ID)
     pub async fn delete(&self, id: i32) -> Result<DeleteResult, BookError> {
         let book: Option<Model> = Entity::find_by_id(id)
             .one(&self.state.db)
