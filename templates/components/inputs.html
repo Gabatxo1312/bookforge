@@ -1,0 +1,43 @@
+{% macro input(name, label, value = "", type = "text", is_required = false, placeholder = "", margin_bottom = true) %}
+  <div {% if margin_bottom %}class="mb-3"{% endif %}>
+    <label for="{{ name }}" class="form-label">
+      {{ label }}
+      {% if is_required %}
+        <span class="text-danger">*</span>
+      {% endif %}
+    </label>
+    <input type="{{ type }}" value="{{ value }}" name="{{ name }}" class="form-control" placeholder="{{ placeholder }}" {% if is_required %}required{% endif %}>
+  </div>
+{% endmacro %}
+
+{% macro select(name, label, options, selected_value = "", is_required = false, margin_bottom = true) -%}
+  <div {% if margin_bottom %}class="mb-3"{% endif %}>
+    <label for="{{ name }}" class="form-label">
+      {{ label }}
+      {% if is_required %}
+        <span class="text-danger">*</span>
+      {% endif %}
+    </label>
+    <select name="{{ name }}" class="form-select" {% if is_required %}required{% endif %}>
+      {% if !is_required %}
+        <option></option>
+      {% endif %}
+      {% for option in options %}
+        {{ caller(option) }}
+      {% endfor %}
+    </select>
+  </div>
+{%- endmacro %}
+
+{% macro textarea(name, label, value = "", rows = 2, is_required = false, placeholder = "", margin_bottom = true) %}
+  <div {% if margin_bottom %}class="mb-3"{% endif %}>
+    <label for="{{ name }}" class="form-label">
+      {{ label }}
+      {% if is_required %}
+        <span class="text-danger">*</span>
+      {% endif %}
+    </label>
+    <textarea value="{{ value }}" name="{{ name }}" rows="{{ rows }}" class="form-control" placeholder="{{ placeholder }}" {% if is_required %}required{% endif %}></textarea>
+  </div>
+{% endmacro %}
+

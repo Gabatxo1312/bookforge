@@ -1,5 +1,7 @@
+use crate::models::book::BookOperator;
 use crate::routes::user::UserForm;
 use crate::state::AppState;
+use crate::state::error::UserSnafu;
 use sea_orm::ActiveValue::Set;
 use sea_orm::DeleteResult;
 use sea_orm::entity::prelude::*;
@@ -72,6 +74,20 @@ impl UserOperator {
         };
 
         user.insert(&self.state.db).await.context(DBSnafu)
+    }
+
+    pub async fn update(&self, id: i32, form: UserForm) -> Result<Model, UserError> {
+        let user_by_id = Self::find_by_id(&self, id).await.context(UserSnafu);
+
+        if let Ok(user) = user_by_id {
+            let mut user: ActiveModel = user.into();
+
+            user.name = Set(form.name);
+
+            user.update(&self.state.db).await.context(DBSnafu)
+        } else {
+            Err(UserError::NotFound { id })
+        }
     }
 
     pub async fn delete(&self, user_id: i32) -> Result<DeleteResult, UserError> {

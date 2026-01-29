@@ -11,18 +11,18 @@
 </div>
 {% endmacro %}
 
-{% macro book_dropdown_button(book, show = true) %}
+{% macro crud_dropdown_button(book, label, sub_path, show = true) %}
   <div class="dropdown">
     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       Actions
     </button>
     <ul class="dropdown-menu">
       {% if show %}
-        <li><a class="dropdown-item" href="/books/{{ book.id }}">Voir</a></li>
+        <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}">Show</a></li>
       {% endif %}
-      <li><a class="dropdown-item" href="/books/{{ book.id }}/edit">Edit</a></li>
+      <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}/edit">Edit</a></li>
       <li>
-        <form method="post" action="/books/{{ book.id }}/delete">
+        <form method="post" action="/{{ sub_path }}/{{ book.id }}/delete" class="mb-0">
           <input class="dropdown-item" type="submit" value="Delete">
         </form>
       </li>

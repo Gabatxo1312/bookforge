@@ -108,7 +108,7 @@ impl BookOperator {
         let book_pages = Entity::find()
             .filter(conditions)
             .order_by_desc(Column::Id)
-            .paginate(&self.state.db, 1);
+            .paginate(&self.state.db, 100);
 
         let books = book_pages
             .fetch_page(page_0indexed)
@@ -138,6 +138,15 @@ impl BookOperator {
         } else {
             Err(BookError::NotFound { id })
         }
+    }
+
+    /// Finds vec of book by its Owner
+    pub async fn find_all_by_owner(&self, owner_id: i32) -> Result<Vec<Model>, BookError> {
+        Entity::find()
+            .filter(Column::OwnerId.eq(owner_id))
+            .all(&self.state.db)
+            .await
+            .context(DBSnafu)
     }
 
     /// Creates a new book from the given form data.

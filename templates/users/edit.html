@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "components/typography.html" as typography %}
+{% import "components/cards.html" as cards %}
+o{% import "components/inputs.html" as form_helpers %}
+
+{% block main %}
+  {{ typography::heading("New User") }}
+
+  {% call cards::card() %}
+    <form action="/users/{{ user.id }}" method="post">
+      <div class="row align-items-end">
+       <div class="col-md-10">
+          {{ form_helpers::input("name", "Name", value = user.name, is_required = true, placeholder = "Ex: Kropotkine", margin_bottom = false) }}
+       </div>
+
+       <div class="col-md-2">
+         <input type="submit" value="Create user" class="btn btn-success">
+       </div>
+     </div>
+    </form>
+  {% endcall %}
+{% endblock %} 

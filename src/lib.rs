@@ -23,8 +23,11 @@ pub fn build_app(state: AppState) -> Router {
         .route("/books/{id}/edit", get(routes::book::edit))
         .route("/books/new", get(routes::book::new))
         .route("/users", get(routes::user::index))
+        .route("/users/new", get(routes::user::new))
+        .route("/users/{id}/edit", get(routes::user::edit))
+        .route("/users/{id}", post(routes::user::update))
         .route("/users", post(routes::user::create))
-        .route("/users/{id}", post(routes::user::delete))
+        .route("/users/{id}/delete", post(routes::user::delete))
         .nest("/assets", static_router())
         .with_state(state)
 }

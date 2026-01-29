@@ -1,50 +1,27 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
 {% import "components/cards.html" as cards %}
+{% import "components/inputs.html" as form_helpers %}
 
 {% block main %}
   {{ typography::heading("New book") }}
 
   {% call cards::card() %}
     <form method="post" action="/books">
-      <div class="mb-3">
-        <label for="title" class="form-label">Name</label>
-        <input type="text" name="title" class="form-control" required>
-      </div>
+      {{ form_helpers::input("title", "Name", is_required = true, placeholder = "Ex: La Petite Dernière") }}
+      {{ form_helpers::input("authors", "Author(s)", is_required = true, placeholder = "Ex: Fatima Daas") }}
 
-      <div class="mb-3">
-        <label for="authors" class="form-label">Author(s)</label>
-        <input type="text" name="authors" class="form-control" required>
-      </div>
+      {% call(option) form_helpers::select("owner_id", "Owner", users, is_required = true) %}
+        <option value="{{ option.id }}">{{ option.name }}</option>
+      {% endcall %}
 
-      <div class="mb-3">
-        <label for="owner_id" class="form-label">Owner</label>
-        <select name="owner_id" class="form-control" required>
-          {% for user in users %}
-          <option value="{{ user.id }}">{{ user.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
+      {% call(option) form_helpers::select("current_holder_id", "Current Holder", users, is_required = false) %}
+        <option value="{{ option.id }}">{{ option.name }}</option>
+      {% endcall %}
+      
+      {{ form_helpers::textarea("description", "Description", rows = 5, is_required = false, placeholder = "Ex: Je m’appelle Fatima Daas. Je suis la mazoziya, la petite dernière. Celle à laquelle on ne s’est pas préparé. Française d’origine algérienne.") }}
 
-      <div class="mb-3">
-        <label for="current_holder_id" class="form-label">Current Holder</label>
-        <select name="current_holder_id" class="form-control">
-          <option></option>
-          {% for user in users %}
-            <option value="{{ user.id }}">{{ user.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea name="description" class="form-control"></textarea>
-      </div>
-
-      <div class="mb-3">
-        <label for="comment" class="form-label">Comment</label>
-        <textarea name="comment" class="form-control"></textarea>
-      </div>
+      {{ form_helpers::textarea("comment", "Comment", rows = 3, is_required = false, placeholder = "Ex: I recommend it, it's great!") }}
 
       <div class="mt-4 text-center">
         <input type="submit" value="Create book" class="btn btn-success">
