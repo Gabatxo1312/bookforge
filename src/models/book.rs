@@ -7,7 +7,7 @@ use snafu::ResultExt;
 use snafu::prelude::*;
 
 use crate::routes::book::BookForm;
-use crate::routes::book::BookQuery;
+use crate::routes::book::IndexQuery;
 use crate::state::AppState;
 use crate::state::error::BookSnafu;
 
@@ -54,6 +54,13 @@ pub struct BookOperator {
     pub state: AppState,
 }
 
+#[derive(Debug, Clone)]
+pub struct BooksPaginate {
+    pub books: Vec<Model>,
+    pub current_page: u64,
+    pub total_page: u64,
+}
+
 impl BookOperator {
     /// Creates a new `BookOperator` with the given application state.
     pub fn new(state: AppState) -> Self {
@@ -63,7 +70,22 @@ impl BookOperator {
     /// Lists all books matching the optional query filters.
     ///
     /// Results are ordered by ID in descending order (newest first).
-    pub async fn list(&self, query: Option<BookQuery>) -> Result<Vec<Model>, BookError> {
+    pub async fn list(&self) -> Result<Vec<Model>, BookError> {
+        Entity::find()
+            .order_by_desc(Column::Id)
+            .all(&self.state.db)
+            .await
+            .context(DBSnafu)
+    }
+
+    pub async fn list_paginate(
+        &self,
+        page: u64,
+        query: Option<IndexQuery>,
+    ) -> Result<BooksPaginate, BookError> {
+        let page = if page > 0 { page } else { 1 }; // keep 1-indexed
+        let page_0indexed = page - 1; // convert for SeaORM (0-based index)
+
         let mut conditions = Condition::all();
         if let Some(book_query) = query {
             if let Some(title) = book_query.title {
@@ -83,12 +105,22 @@ impl BookOperator {
             }
         }
 
-        Entity::find()
+        let book_pages = Entity::find()
             .filter(conditions)
             .order_by_desc(Column::Id)
-            .all(&self.state.db)
+            .paginate(&self.state.db, 1);
+
+        let books = book_pages
+            .fetch_page(page_0indexed)
             .await
-            .context(DBSnafu)
+            .context(DBSnafu)?;
+        let total_page = book_pages.num_pages().await.context(DBSnafu)?;
+
+        Ok(BooksPaginate {
+            books,
+            current_page: page,
+            total_page,
+        })
     }
 
     /// Finds a book by its ID.

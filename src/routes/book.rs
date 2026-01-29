@@ -31,12 +31,15 @@ struct BookWithUser {
 
 /// Query for filter search query
 #[serde_as]
-#[derive(Deserialize, Clone)]
-pub struct BookQuery {
+#[derive(Deserialize, Clone, Debug)]
+pub struct IndexQuery {
     pub title: Option<String>,
+    pub page: Option<usize>,
     pub authors: Option<String>,
+    #[serde(default)]
     #[serde_as(as = "NoneAsEmptyString")]
     pub owner_id: Option<i32>,
+    #[serde(default)]
     #[serde_as(as = "NoneAsEmptyString")]
     pub current_holder_id: Option<i32>,
 }
@@ -45,22 +48,31 @@ pub struct BookQuery {
 #[template(path = "index.html")]
 struct BookIndexTemplate {
     books_with_user: Vec<BookWithUser>,
-    query: BookQuery,
+    query: IndexQuery,
     users: Vec<UserModel>,
+    current_page: u64,
+    total_page: u64,
+    base_query: String,
 }
 
 pub async fn index(
     State(state): State<AppState>,
-    Query(query): Query<BookQuery>,
+    Query(query): Query<IndexQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let page: u64 = query
+        .page
+        .map(|p| p.max(1) as u64) // Minimum 1
+        .unwrap_or(1);
+
     // Get all Users
     let users = UserOperator::new(state.clone())
         .list()
         .await
         .context(UserSnafu)?;
+
     // Get all Book filtered with query
-    let books = BookOperator::new(state)
-        .list(Some(query.clone()))
+    let books_paginate = BookOperator::new(state)
+        .list_paginate(page, Some(query.clone()))
         .await
         .context(BookSnafu)?;
 
@@ -73,7 +85,8 @@ pub async fn index(
         .collect();
 
     // Build object of Book with his relation Owner (User) and current_holder (User)
-    let result: Vec<BookWithUser> = books
+    let result: Vec<BookWithUser> = books_paginate
+        .books
         .into_iter()
         .filter_map(|book| {
             let owner = user_by_id.get(&book.owner_id).cloned()?;
@@ -89,10 +102,29 @@ pub async fn index(
         })
         .collect();
 
+    // build original search to be sure to keep
+    // search when we change page
+    let mut base_query = String::new();
+    if let Some(title) = &query.title {
+        base_query.push_str(&format!("title={}&", title));
+    }
+    if let Some(authors) = &query.authors {
+        base_query.push_str(&format!("authors={}&", authors));
+    }
+    if let Some(owner_id) = &query.owner_id {
+        base_query.push_str(&format!("owner_id={}&", owner_id));
+    }
+    if let Some(current_holder_id) = &query.current_holder_id {
+        base_query.push_str(&format!("current_holder_id={}&", current_holder_id));
+    }
+
     Ok(BookIndexTemplate {
         books_with_user: result,
         query,
         users,
+        current_page: books_paginate.current_page,
+        total_page: books_paginate.total_page,
+        base_query,
     })
 }
 
