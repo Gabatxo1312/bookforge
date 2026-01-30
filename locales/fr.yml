@@ -11,6 +11,7 @@ common:
   search: Filtrer
   reset: Réini.
   show: Voir
+  no_result: Aucun résultat
   close: Fermer
   confirmation: Confirmation
   are_you_sure: Êtes-vous sûr ?

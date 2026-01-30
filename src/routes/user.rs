@@ -25,7 +25,7 @@ use crate::{
 #[derive(Template, WebTemplate)]
 #[template(path = "users/index.html")]
 struct UsersIndexTemplate {
-    user_with_books_number: Vec<UserWithBookNumber>,
+    users_with_books_number: Vec<UserWithBookNumber>,
     query: IndexQuery,
 }
 
@@ -84,7 +84,7 @@ pub async fn index(
     }
 
     Ok(UsersIndexTemplate {
-        user_with_books_number: result,
+        users_with_books_number: result,
         query,
     })
 }
