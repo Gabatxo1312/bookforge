@@ -33,6 +33,7 @@ pub struct AppConfig {
     #[serde(default = "AppConfig::default_sqlite_path")]
     pub database_path: Utf8PathBuf,
     pub locale: String,
+    pub base_path: String,
     pub listener: Listener,
 }
 
@@ -40,6 +41,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         AppConfig {
             database_path: Self::default_sqlite_path(),
+            base_path: Self::default_base_path(),
             locale: Self::default_locale(),
             listener: Listener::default(),
         }
@@ -96,6 +98,10 @@ impl AppConfig {
 
     fn default_locale() -> String {
         "en".to_string()
+    }
+
+    fn default_base_path() -> String {
+        "".to_string()
     }
 
     pub fn default_sqlite_path() -> Utf8PathBuf {

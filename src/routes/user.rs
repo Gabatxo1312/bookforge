@@ -16,6 +16,7 @@ use crate::{
         book::BookOperator,
         user::{self, UserOperator},
     },
+    routes::template_ctx::TemplateCtx,
     state::{
         AppState,
         error::{AppStateError, BookSnafu, UserSnafu},
@@ -27,6 +28,7 @@ use crate::{
 struct UsersIndexTemplate {
     users_with_books_number: Vec<UserWithBookNumber>,
     query: IndexQuery,
+    ctx: TemplateCtx,
 }
 
 pub struct UserWithBookNumber {
@@ -86,6 +88,9 @@ pub async fn index(
     Ok(UsersIndexTemplate {
         users_with_books_number: result,
         query,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
     })
 }
 
@@ -135,24 +140,36 @@ pub async fn delete(
 #[template(path = "users/edit.html")]
 struct EditTemplate {
     user: user::Model,
+    ctx: TemplateCtx,
 }
 
 pub async fn edit(
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let user = UserOperator::new(state)
+    let user = UserOperator::new(state.clone())
         .find_by_id(id)
         .await
         .context(UserSnafu)?;
 
-    Ok(EditTemplate { user })
+    Ok(EditTemplate {
+        user,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
+    })
 }
 
 #[derive(Template, WebTemplate)]
 #[template(path = "users/new.html")]
-struct NewTemplate {}
+struct NewTemplate {
+    ctx: TemplateCtx,
+}
 
-pub async fn new() -> impl axum::response::IntoResponse {
-    NewTemplate {}
+pub async fn new(State(state): State<AppState>) -> impl axum::response::IntoResponse {
+    NewTemplate {
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
+    }
 }

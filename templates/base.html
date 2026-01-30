@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <title>{% block title %}{{ t!("name") }}{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/assets/css/bootstrap.css">
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href='{{ ctx.asset("assets/css/bootstrap.css") }}'>
+  <link rel="stylesheet" href='{{ ctx.asset("assets/css/main.css") }}'>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon.png">
 
-  <link rel="stylesheet" href="/assets/css/fork-awesome.min.css">
-  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  <link rel="stylesheet" href='{{ ctx.asset("assets/css/fork-awesome.min.css") }}'>
+  <link rel="icon" type="image/x-icon" href='{{ ctx.asset("assets/images/favicon.ico") }}'>
   {% block extra_head %}{% endblock extra_head %}
 </head>
 
@@ -26,7 +26,7 @@
     {% endblock %}
   </footer>
 
-  <script src="/assets/js/bootstrap.min.js"></script>
-  <script src="/assets/js/script.js"></script>
+  <script src='{{ ctx.asset("assets/js/bootstrap.min.js") }}'></script>
+  <script src='{{ ctx.asset("assets/js/script.js") }}'></script>
 </body>
 </html>

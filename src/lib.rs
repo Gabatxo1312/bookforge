@@ -2,11 +2,12 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::{
     Router,
+    extract::State,
     routing::{get, post},
 };
 use static_serve::embed_assets;
 
-use crate::state::AppState;
+use crate::{routes::template_ctx::TemplateCtx, state::AppState};
 
 mod migrations;
 mod models;
@@ -44,8 +45,14 @@ pub fn build_app(state: AppState) -> Router {
 
 #[derive(Template, WebTemplate)]
 #[template(path = "404.html")]
-struct NotFoundTemplate {}
+struct NotFoundTemplate {
+    pub ctx: TemplateCtx,
+}
 
-pub async fn error_handler() -> impl axum::response::IntoResponse {
-    NotFoundTemplate {}
+pub async fn error_handler(State(state): State<AppState>) -> impl axum::response::IntoResponse {
+    NotFoundTemplate {
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
+    }
 }

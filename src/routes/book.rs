@@ -13,7 +13,9 @@ use serde::Deserialize;
 use serde_with::{NoneAsEmptyString, serde_as};
 use snafu::prelude::*;
 
-use crate::{models::book::Model as BookModel, state::error::CSVSnafu};
+use crate::{
+    models::book::Model as BookModel, routes::template_ctx::TemplateCtx, state::error::CSVSnafu,
+};
 use crate::{models::user::Model as UserModel, state::error::IOSnafu};
 
 use crate::{
@@ -55,6 +57,7 @@ struct BookIndexTemplate {
     current_page: u64,
     total_page: u64,
     base_query: String,
+    ctx: TemplateCtx,
 }
 
 pub async fn index(
@@ -73,7 +76,7 @@ pub async fn index(
         .context(UserSnafu)?;
 
     // Get all Book filtered with query
-    let books_paginate = BookOperator::new(state)
+    let books_paginate = BookOperator::new(state.clone())
         .all_paginate(page, Some(query.clone()))
         .await
         .context(BookSnafu)?;
@@ -127,6 +130,9 @@ pub async fn index(
         current_page: books_paginate.current_page,
         total_page: books_paginate.total_page,
         base_query,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
     })
 }
 
@@ -136,6 +142,7 @@ struct ShowBookTemplate {
     book: BookModel,
     owner: UserModel,
     current_holder: Option<UserModel>,
+    ctx: TemplateCtx,
 }
 
 pub async fn show(
@@ -168,6 +175,9 @@ pub async fn show(
         book,
         owner,
         current_holder,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
     })
 }
 
@@ -200,14 +210,23 @@ pub async fn create(
 #[template(path = "books/new.html")]
 struct NewBookTemplate {
     users: Vec<UserModel>,
+    ctx: TemplateCtx,
 }
 
 pub async fn new(
     State(state): State<AppState>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let users = UserOperator::new(state).all().await.context(UserSnafu)?;
+    let users = UserOperator::new(state.clone())
+        .all()
+        .await
+        .context(UserSnafu)?;
 
-    Ok(NewBookTemplate { users })
+    Ok(NewBookTemplate {
+        users,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
+    })
 }
 
 #[derive(Template, WebTemplate)]
@@ -215,6 +234,7 @@ pub async fn new(
 struct EditBookTemplate {
     users: Vec<UserModel>,
     book: BookModel,
+    ctx: TemplateCtx,
 }
 
 pub async fn edit(
@@ -225,12 +245,18 @@ pub async fn edit(
         .all()
         .await
         .context(UserSnafu)?;
-    let book = BookOperator::new(state)
+    let book = BookOperator::new(state.clone())
         .find_by_id(id)
         .await
         .context(BookSnafu)?;
 
-    Ok(EditBookTemplate { users, book })
+    Ok(EditBookTemplate {
+        users,
+        book,
+        ctx: TemplateCtx {
+            base_path: state.config.base_path,
+        },
+    })
 }
 
 pub async fn update(

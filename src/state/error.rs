@@ -6,6 +6,7 @@ use snafu::prelude::*;
 
 use crate::{
     models::{book::BookError, user::UserError},
+    routes::template_ctx::TemplateCtx,
     state::config::ConfigError,
 };
 
@@ -47,6 +48,7 @@ pub enum AppStateError {
 #[template(path = "error.html")]
 struct ErrorTemplate {
     state: AppStateErrorContext,
+    ctx: TemplateCtx,
 }
 
 struct AppStateErrorContext {
@@ -66,6 +68,9 @@ impl IntoResponse for AppStateError {
         let error_context = AppStateErrorContext::from(self);
         ErrorTemplate {
             state: error_context,
+            ctx: TemplateCtx {
+                base_path: "".to_string(),
+            },
         }
         .into_response()
     }
