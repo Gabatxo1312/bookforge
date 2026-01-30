@@ -1,16 +1,16 @@
 use askama::Template;
 use askama_web::WebTemplate;
 use axum::response::{IntoResponse, Response};
+use log::error;
 use snafu::prelude::*;
 
 use crate::{
-    models::{book::BookError, user::UserError},
+    models::{
+        book::{BookError, NotFoundSnafu},
+        user::UserError,
+    },
     state::config::ConfigError,
 };
-
-#[derive(Template, WebTemplate)]
-#[template(path = "error.html")]
-struct ErrorTemplate {}
 
 #[derive(Snafu, Debug)]
 #[snafu(visibility(pub))]
@@ -38,8 +38,30 @@ pub enum AppStateError {
     },
 }
 
+#[derive(Template, WebTemplate)]
+#[template(path = "error.html")]
+struct ErrorTemplate {
+    state: AppStateErrorContext,
+}
+
+struct AppStateErrorContext {
+    pub errors: Vec<AppStateError>,
+}
+
+impl From<AppStateError> for AppStateErrorContext {
+    fn from(e: AppStateError) -> Self {
+        error!("{:?}", e);
+
+        Self { errors: vec![e] }
+    }
+}
+
 impl IntoResponse for AppStateError {
     fn into_response(self) -> Response {
-        ErrorTemplate {}.into_response()
+        let error_context = AppStateErrorContext::from(self);
+        ErrorTemplate {
+            state: error_context,
+        }
+        .into_response()
     }
 }

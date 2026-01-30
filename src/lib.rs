@@ -1,3 +1,5 @@
+use askama::Template;
+use askama_web::WebTemplate;
 use axum::{
     Router,
     routing::{get, post},
@@ -29,5 +31,14 @@ pub fn build_app(state: AppState) -> Router {
         .route("/users", post(routes::user::create))
         .route("/users/{id}/delete", post(routes::user::delete))
         .nest("/assets", static_router())
+        .fallback(error_handler)
         .with_state(state)
+}
+
+#[derive(Template, WebTemplate)]
+#[template(path = "404.html")]
+struct NotFoundTemplate {}
+
+pub async fn error_handler() -> impl axum::response::IntoResponse {
+    NotFoundTemplate {}
 }
