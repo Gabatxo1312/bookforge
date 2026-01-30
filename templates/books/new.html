@@ -3,6 +3,10 @@
 {% import "components/cards.html" as cards %}
 {% import "components/inputs.html" as form_helpers %}
 
+{% block title %}
+    {{ t!("book.new.title_tag") }}
+{% endblock %}
+
 {% block main %}
   {{ typography::heading(t!("book.new.title")) }}
 

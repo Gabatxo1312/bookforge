@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block title %}
+    {{ t!("error.error_404.title_tag") }}
+{% endblock %}
+
 {% block main %}
     <div class="mt-4 text-center">
         <h1>{{ t!("error.error_404.title") }}</h1>
