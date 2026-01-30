@@ -1,0 +1,67 @@
+_version: 1
+name: "BookForge"
+common:
+  download: Télécharger
+  create: Créer
+  edit: Modifier
+  delete: Supprimer
+  next: Suivant
+  previous: Précédent
+  actions: Actions
+  search: Filtrer
+  reset: Réini.
+  show: Voir
+  close: Fermer
+  confirmation: Confirmation
+  are_you_sure: Êtes-vous sûr ?
+nav:
+  toggle: Basculer la navigation
+  books: Livres
+  users: Utilisateurs
+theme:
+  light: Light
+  dark: Dark
+user:
+  attributes:
+    name: Nom
+    owner_books: Livres possédés
+    borrowed_books: Livres empruntés
+  index:
+    title: Tous les utilisateurs
+    button: Ajouter un utilisateur
+  edit:
+    title: Modifier
+    button: Modifier l'utilisateur
+  new:
+    title: Nouvel utilisateur
+    button: Créer l'utilisateur
+book:
+  attributes:
+    title: Titre
+    authors: Auteur.ice.(s)
+    description: Description
+    owner: Propriétaire
+    current_holder: Détenteur.ice actuel.le
+    comment: Commentaire
+  index:
+    title: Tous les livres
+  new:
+    title: Nouveau livre
+    button: Créer le livre
+    button_short: Ajouter un livre
+  edit:
+    title: Modifier le livre
+    button: Modifier le livre
+  show:
+    book_details: Détails du livre
+    user_details: Détails de l'utilisateur
+    more_informations: Plus d'informations
+footer:
+  message: Fait avec amour & Nique les fachos !
+error:
+  error_404:
+    title: Oups ! Cette page n'existe pas
+    subtitle: 404 NOT FOUND
+    button: Retour à l'accueil
+  generic:
+    title: Oups ! Une erreur s'est produite

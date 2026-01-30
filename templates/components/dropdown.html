@@ -14,15 +14,15 @@
 {% macro crud_dropdown_button(book, label, sub_path, show = true) %}
   <div class="dropdown">
     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      Actions
+      {{ label }}
     </button>
     <ul class="dropdown-menu">
       {% if show %}
-        <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}">Show</a></li>
+        <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}">{{ t!("common.show") }}</a></li>
       {% endif %}
-      <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}/edit">Edit</a></li>
+      <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}/edit">{{ t!("common.edit") }}</a></li>
       <li>
-        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ book.id }}">Delete</a>
+        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ book.id }}">{{ t!("common.delete") }}</a>
       </li>
     </ul>
   </div>
@@ -32,16 +32,16 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmation</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">{{ t!("common.confirmation") }}</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Are you sure ?</p>
+          <p>{{ t!("common.are_you_sure") }}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t!("common.close") }}</button>
           <form method="post" action="/{{ sub_path }}/{{ book.id }}/delete" class="m-0">
-            <input class="btn btn-danger" type="submit" value="Delete">
+            <input class="btn btn-danger" type="submit" value='{{ t!("common.delete") }}'>
           </form>
         </div>
       </div>

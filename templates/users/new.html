@@ -4,16 +4,16 @@
 o{% import "components/inputs.html" as form_helpers %}
 
 {% block main %}
-  {{ typography::heading("New User") }}
+  {{ typography::heading(t!("user.new.title")) }}
 
   {% call cards::card() %}
     <form action="/users" method="post">
       <div class="row align-items-end">
        <div class="col-md-10">
-          {{ form_helpers::input("name", "Name", is_required = true, placeholder = "Ex: Kropotkine", margin_bottom = false) }}
+          {{ form_helpers::input("name", t!("user.attributes.name"), is_required = true, placeholder = "Ex: Kropotkine", margin_bottom = false) }}
         </div>
        <div class="col-md-2">
-         <input type="submit" value="Create user" class="btn btn-success">
+         <input type="submit" value='{{ t!("user.new.button") }}' class="btn btn-success">
        </div>
      </div>
     </form>

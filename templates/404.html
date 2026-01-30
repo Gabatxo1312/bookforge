@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block main %}
     <div class="mt-4 text-center">
-        <h1>Oops ! This page does not exist</h1>
-        <h2 class="fst-italic">404 NOT FOUND</h2>
-        <a href="/" class="mt-3 btn btn-info">Back to home</a>
+        <h1>{{ t!("error.error_404.title") }}</h1>
+        <h2 class="fst-italic">{{ t!("error.error_404.subtitle") }}</h2>
+        <a href="/" class="mt-3 btn btn-info">{{ t!("error.error_404.button") }}</a>
     </div>
 {% endblock %}

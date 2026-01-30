@@ -4,27 +4,27 @@
 {% import "components/inputs.html" as form_helpers %}
 
 {% block main %}
-  {{ typography::heading("New book") }}
+  {{ typography::heading(t!("book.new.title")) }}
 
   {% call cards::card() %}
     <form method="post" action="/books">
-      {{ form_helpers::input("title", "Name", is_required = true, placeholder = "Ex: La Petite Dernière") }}
-      {{ form_helpers::input("authors", "Author(s)", is_required = true, placeholder = "Ex: Fatima Daas") }}
+      {{ form_helpers::input("title", t!("book.attributes.title"), is_required = true, placeholder = "Ex: La Petite Dernière") }}
+      {{ form_helpers::input("authors", t!("book.attributes.authors"), is_required = true, placeholder = "Ex: Fatima Daas") }}
 
-      {% call(option) form_helpers::select("owner_id", "Owner", users, is_required = true) %}
+      {% call(option) form_helpers::select("owner_id", t!("book.attributes.owner"), users, is_required = true) %}
         <option value="{{ option.id }}">{{ option.name }}</option>
       {% endcall %}
 
-      {% call(option) form_helpers::select("current_holder_id", "Current Holder", users, is_required = false) %}
+      {% call(option) form_helpers::select("current_holder_id", t!("book.attributes.current_holder"), users, is_required = false) %}
         <option value="{{ option.id }}">{{ option.name }}</option>
       {% endcall %}
-      
-      {{ form_helpers::textarea("description", "Description", rows = 5, is_required = false, placeholder = "Ex: Je m’appelle Fatima Daas. Je suis la mazoziya, la petite dernière. Celle à laquelle on ne s’est pas préparé. Française d’origine algérienne.") }}
 
-      {{ form_helpers::textarea("comment", "Comment", rows = 3, is_required = false, placeholder = "Ex: I recommend it, it's great!") }}
+      {{ form_helpers::textarea("description", t!("book.attributes.description"), rows = 5, is_required = false, placeholder = "Ex: Je m’appelle Fatima Daas. Je suis la mazoziya, la petite dernière. Celle à laquelle on ne s’est pas préparé. Française d’origine algérienne.") }}
+
+      {{ form_helpers::textarea("comment", t!("book.attributes.comment"), rows = 3, is_required = false, placeholder = "Ex: I recommend it, it's great!") }}
 
       <div class="mt-4 text-center">
-        <input type="submit" value="Create book" class="btn btn-success">
+        <input type="submit" value='{{ t!("book.new.button") }}' class="btn btn-success">
       </div>
     </form>
   {% endcall %}
