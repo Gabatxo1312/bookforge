@@ -149,6 +149,18 @@ impl BookOperator {
             .context(DBSnafu)
     }
 
+    /// Finds vec of book by its Owner
+    pub async fn find_all_by_current_holder(
+        &self,
+        current_holder_id: i32,
+    ) -> Result<Vec<Model>, BookError> {
+        Entity::find()
+            .filter(Column::CurrentHolderId.eq(current_holder_id))
+            .all(&self.state.db)
+            .await
+            .context(DBSnafu)
+    }
+
     /// Creates a new book from the given form data.
     pub async fn create(&self, form: BookForm) -> Result<Model, BookError> {
         let book = ActiveModel {

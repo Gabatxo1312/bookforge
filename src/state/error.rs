@@ -5,10 +5,7 @@ use log::error;
 use snafu::prelude::*;
 
 use crate::{
-    models::{
-        book::{BookError, NotFoundSnafu},
-        user::UserError,
-    },
+    models::{book::BookError, user::UserError},
     state::config::ConfigError,
 };
 

@@ -22,10 +22,29 @@
       {% endif %}
       <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}/edit">Edit</a></li>
       <li>
-        <form method="post" action="/{{ sub_path }}/{{ book.id }}/delete" class="mb-0">
-          <input class="dropdown-item" type="submit" value="Delete">
-        </form>
+        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ book.id }}">Delete</a>
       </li>
     </ul>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="deleteUserModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteUserModal{{ book.id }}Label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmation</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure ?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form method="post" action="/{{ sub_path }}/{{ book.id }}/delete" class="m-0">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 {% endmacro %}

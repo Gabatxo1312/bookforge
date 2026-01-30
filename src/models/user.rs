@@ -1,4 +1,5 @@
-use crate::models::book::BookOperator;
+use crate::models::book;
+use crate::routes::book::BookForm;
 use crate::routes::user::UserForm;
 use crate::state::AppState;
 use crate::state::error::UserSnafu;
@@ -38,6 +39,8 @@ pub enum UserError {
     DB { source: sea_orm::DbErr },
     #[snafu(display("User with id {id} not found"))]
     NotFound { id: i32 },
+    #[snafu(display("Book error"))]
+    Book { source: super::book::BookError },
 }
 
 #[derive(Debug)]
@@ -90,7 +93,46 @@ impl UserOperator {
         }
     }
 
+    /// Delete user by ID.
+    /// Before deleting the user, you must search for all the books they own in order to delete them beforehand,
+    /// then search for all the books they have borrowed in order to update the current holder to None.
     pub async fn delete(&self, user_id: i32) -> Result<DeleteResult, UserError> {
+        // get all
+        let owner_books = book::BookOperator::new(self.state.clone())
+            .find_all_by_owner(user_id)
+            .await
+            .context(BookSnafu)?;
+
+        // Delete all book with owner_id = current_user
+        for owner_book in owner_books {
+            book::BookOperator::new(self.state.clone())
+                .delete(owner_book.id)
+                .await
+                .context(BookSnafu)?;
+        }
+
+        let current_holder_books = book::BookOperator::new(self.state.clone())
+            .find_all_by_current_holder(user_id)
+            .await
+            .context(BookSnafu)?;
+
+        // Update all book with current Holder = current user
+        for current_holder_book in current_holder_books {
+            let form = BookForm {
+                title: current_holder_book.title,
+                authors: current_holder_book.authors,
+                owner_id: current_holder_book.owner_id,
+                description: current_holder_book.description,
+                comment: current_holder_book.comment,
+                current_holder_id: None,
+            };
+
+            book::BookOperator::new(self.state.clone())
+                .update(current_holder_book.id, form)
+                .await
+                .context(BookSnafu)?;
+        }
+
         let user: Option<Model> = Entity::find_by_id(user_id)
             .one(&self.state.db)
             .await
