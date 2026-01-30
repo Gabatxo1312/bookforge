@@ -1,12 +1,13 @@
 _version: 1
 name: "BookForge"
+
 common:
   download: Download
   create: Create
   edit: Edit
   delete: Delete
   next: Next
-  previous: Prev
+  previous: Previous
   actions: Actions
   search: Search
   reset: Reset
@@ -15,54 +16,77 @@ common:
   close: Close
   confirmation: Confirmation
   are_you_sure: Are you sure?
+
 nav:
   toggle: Toggle navigation
   books: Books
   users: Users
+
 theme:
   light: Light
   dark: Dark
+
 user:
   attributes:
     name: Name
-    owner_books: Owner books
+    owner_books: Owned books
     borrowed_books: Borrowed books
+
   index:
+    title_tag: Users list | BookForge
     title: All Users
-    button: Add User
+    button: Add a user
+
   edit:
+    title_tag: Edit user | BookForge
     title: Edit
     button: Edit user
+
   new:
-    title: New User
-    button: Create User
+    title_tag: New user | BookForge
+    title: New user
+    button: Create user
+
 book:
   attributes:
     title: Title
     authors: Author(s)
     description: Description
     owner: Owner
-    current_holder: Current Holder
+    current_holder: Current holder
     comment: Comment
+
   index:
+    title_tag: Books list | BookForge
     title: All Books
+
   new:
+    title_tag: New book | BookForge
     title: New Book
-    button: Create Book
+    button: Create book
     button_short: Add book
+
   edit:
-    title: Edit Book
-    button: Edit Book
+    title_tag: Edit book | BookForge
+    title: Edit book
+    button: Edit book
+
   show:
-    book_details: Book Details
-    user_details: User Details
-    more_informations: More Informations
+    title_tag: Details | BookForge
+    book_details: Book details
+    user_details: User details
+    more_informations: More information
+
 footer:
-  message: Made with Love & Fuck a Fascist!
+  message: Made with love & Fuck fascists!
+
 error:
   error_404:
-    title: Oops ! This page does not exist
+    title_tag: Error 404 | BookForge
+    title: Oops! This page does not exist
     subtitle: 404 NOT FOUND
     button: Back to home
+
   generic:
+    title_tag: Error | BookForge
     title: Oops! An error occurred
