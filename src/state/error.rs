@@ -33,6 +33,14 @@ pub enum AppStateError {
     Book {
         source: BookError,
     },
+    #[snafu(display("CSV Error"))]
+    CSV {
+        source: csv::Error,
+    },
+    #[snafu(display("IO Error"))]
+    IO {
+        source: std::io::Error,
+    },
 }
 
 #[derive(Template, WebTemplate)]

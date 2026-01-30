@@ -78,7 +78,18 @@ impl BookOperator {
             .context(DBSnafu)
     }
 
-    pub async fn list_paginate(
+    pub async fn all_filtered(&self, query: Option<IndexQuery>) -> Result<Vec<Model>, BookError> {
+        let conditions = Self::filter_conditions(query);
+
+        Entity::find()
+            .filter(conditions)
+            .order_by_desc(Column::Id)
+            .all(&self.state.db)
+            .await
+            .context(DBSnafu)
+    }
+
+    pub async fn all_paginate(
         &self,
         page: u64,
         query: Option<IndexQuery>,
@@ -86,24 +97,7 @@ impl BookOperator {
         let page = if page > 0 { page } else { 1 }; // keep 1-indexed
         let page_0indexed = page - 1; // convert for SeaORM (0-based index)
 
-        let mut conditions = Condition::all();
-        if let Some(book_query) = query {
-            if let Some(title) = book_query.title {
-                conditions = conditions.add(Column::Title.contains(&title));
-            }
-
-            if let Some(authors) = book_query.authors {
-                conditions = conditions.add(Column::Authors.contains(&authors));
-            }
-
-            if let Some(owner_id) = book_query.owner_id {
-                conditions = conditions.add(Column::OwnerId.eq(owner_id));
-            }
-
-            if let Some(current_holder_id) = book_query.current_holder_id {
-                conditions = conditions.add(Column::CurrentHolderId.eq(current_holder_id));
-            }
-        }
+        let conditions = Self::filter_conditions(query);
 
         let book_pages = Entity::find()
             .filter(conditions)
@@ -208,5 +202,29 @@ impl BookOperator {
         let book: Model = book.unwrap();
 
         book.delete(&self.state.db).await.context(DBSnafu)
+    }
+
+    // private
+
+    fn filter_conditions(query: Option<IndexQuery>) -> Condition {
+        let mut conditions = Condition::all();
+        if let Some(book_query) = query {
+            if let Some(title) = book_query.title {
+                conditions = conditions.add(Column::Title.contains(&title));
+            }
+
+            if let Some(authors) = book_query.authors {
+                conditions = conditions.add(Column::Authors.contains(&authors));
+            }
+
+            if let Some(owner_id) = book_query.owner_id {
+                conditions = conditions.add(Column::OwnerId.eq(owner_id));
+            }
+
+            if let Some(current_holder_id) = book_query.current_holder_id {
+                conditions = conditions.add(Column::CurrentHolderId.eq(current_holder_id));
+            }
+        }
+        return conditions;
     }
 }
