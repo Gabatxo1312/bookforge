@@ -1,4 +1,5 @@
 database_path = ""
+locale = "fr"
 
 [listener]
 port = 8000

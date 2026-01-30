@@ -1,0 +1,67 @@
+_version: 1
+name: "BookForge"
+common:
+  download: Download
+  create: Create
+  edit: Edit
+  delete: Delete
+  next: Next
+  previous: Prev
+  actions: Actions
+  search: Search
+  reset: Reset
+  show: Show
+  close: Close
+  confirmation: Confirmation
+  are_you_sure: Are you sure?
+nav:
+  toggle: Toggle navigation
+  books: Books
+  users: Users
+theme:
+  light: Light
+  dark: Dark
+user:
+  attributes:
+    name: Name
+    owner_books: Owner books
+    borrowed_books: Borrowed books
+  index:
+    title: All Users
+    button: Add User
+  edit:
+    title: Edit
+    button: Edit user
+  new:
+    title: New User
+    button: Create User
+book:
+  attributes:
+    title: Title
+    authors: Author(s)
+    description: Description
+    owner: Owner
+    current_holder: Current Holder
+    comment: Comment
+  index:
+    title: All Books
+  new:
+    title: New Book
+    button: Create Book
+    button_short: Add book
+  edit:
+    title: Edit Book
+    button: Edit Book
+  show:
+    book_details: Book Details
+    user_details: User Details
+    more_informations: More Informations
+footer:
+  message: Made with Love & Fuck a Fascist!
+error:
+  error_404:
+    title: Oops ! This page does not exist
+    subtitle: 404 NOT FOUND
+    button: Back to home
+  generic:
+    title: Oops! An error occurred

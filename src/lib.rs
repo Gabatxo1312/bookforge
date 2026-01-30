@@ -13,7 +13,13 @@ mod models;
 mod routes;
 pub mod state;
 
+#[macro_use]
+extern crate rust_i18n;
+
+i18n!("locales", fallback = "en", minify_key = true);
+
 pub fn build_app(state: AppState) -> Router {
+    rust_i18n::set_locale(&state.config.locale);
     embed_assets!("assets", compress = true);
 
     Router::new()

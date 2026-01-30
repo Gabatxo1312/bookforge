@@ -9,34 +9,34 @@
 
   {% call cards::card() %}
     <div class="mt-4">
-      <h5 class="mt-4 fw-bold">Book details</h5>
-      {{ fields::field("Name", book.title) }}
-      {{ fields::field("Authors", book.authors) }}
+      <h5 class="mt-4 fw-bold">{{ t!("book.show.book_details") }}</h5>
+      {{ fields::field(t!("book.attributes.title"), book.title) }}
+      {{ fields::field(t!("book.attributes.authors"), book.authors) }}
 
       {% match book.description %}
       {% when Some with (description) %}
-        {{ fields::field("Description", description) }}
+        {{ fields::field(t!("book.attributes.description"), description) }}
       {% when None %}
-        {{ fields::field("Description", "-") }}
+        {{ fields::field(t!("book.attributes.description"), "-") }}
       {% endmatch %}
 
-      <h5 class="mt-50px fw-bold">User Details</h5>
-      {{ fields::field("Owner", owner.name) }}
+      <h5 class="mt-50px fw-bold">{{ t!("book.show.user_details") }}</h5>
+      {{ fields::field(t!("book.attributes.owner"), owner.name) }}
 
       {% match current_holder %}
       {% when Some with (current_holder) %}
-        {{ fields::field("Current Holder", current_holder.name) }}
+        {{ fields::field(t!("book.attributes.current_holder"), current_holder.name) }}
       {% when None %}
-        {{ fields::field("Current Holder", "-") }}
+        {{ fields::field(t!("book.attributes.current_holder"), "-") }}
       {% endmatch %}
 
 
-      <h5 class="mt-50px fw-bold">More Informations</h5>
+      <h5 class="mt-50px fw-bold">{{ t!("book.show.more_informations") }}</h5>
       {% match book.comment %}
       {% when Some with (comment) %}
-        {{ fields::field("Comment", comment) }}
+        {{ fields::field(t!("book.attributes.comment"), comment) }}
       {% when None %}
-        {{ fields::field("Comment", "-") }}
+        {{ fields::field(t!("book.attributes.comment"), "-") }}
       {% endmatch %}
     </div>
   {% endcall %}

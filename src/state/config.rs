@@ -32,6 +32,7 @@ pub enum ConfigError {
 pub struct AppConfig {
     #[serde(default = "AppConfig::default_sqlite_path")]
     pub database_path: Utf8PathBuf,
+    pub locale: String,
     pub listener: Listener,
 }
 
@@ -39,6 +40,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         AppConfig {
             database_path: Self::default_sqlite_path(),
+            locale: Self::default_locale(),
             listener: Listener::default(),
         }
     }
@@ -90,6 +92,10 @@ impl AppConfig {
 
     fn config_file_path() -> Utf8PathBuf {
         Self::config_path().join("BookForge.toml")
+    }
+
+    fn default_locale() -> String {
+        "en".to_string()
     }
 
     pub fn default_sqlite_path() -> Utf8PathBuf {

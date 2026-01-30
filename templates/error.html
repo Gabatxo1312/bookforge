@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block main %}
     <div class="mt-4 text-center">
-        <h1>Oops ! An Error occured</h1>
+        <h1>{{ t!("error.generic.title") }}</h1>
         <div class="alert alert-danger">
           {% for error in state.errors %}
             <p>{{ error }}</p>
           {% endfor %}
         </div>
-        <a href="/" class="mt-3 btn btn-info">Back to home</a>
+        <a href="/" class="mt-3 btn btn-info">{{ t!("error.error_404.button") }}</a>
     </div>
 {% endblock %}

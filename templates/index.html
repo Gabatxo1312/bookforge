@@ -4,9 +4,9 @@
 {% import "components/cards.html" as cards %}
 
 {% block main %}
-  {% call typography::heading("All books") %}
+  {% call typography::heading(t!("book.index.title")) %}
     <a href="/books/download_csv?{{ base_query }}" class="btn btn-info">
-      <i class="fa fa-download me-2" aria-hidden="true"></i> Download (csv)
+      <i class="fa fa-download me-2" aria-hidden="true"></i> {{ t!("common.download") }} (csv)
     </a>
   {% endcall %}
 
@@ -14,7 +14,7 @@
     <form method="get">
       <div class="row">
         <div class="col-md-3">
-          <label for="title" class="form-label">Name</label>
+          <label for="title" class="form-label">{{ t!("book.attributes.title") }}</label>
           {% match query.title %}
             {% when Some with (value) %}
               <input type="text" name="title" value="{{ value }}" class="form-control" placeholder="Ex: La liberte ou rien">
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-md-3">
-          <label for="authors" class="form-label">Authors</label>
+          <label for="authors" class="form-label">{{ t!("book.attributes.authors") }}</label>
 
           {% match query.authors %}
             {% when Some with (value) %}
@@ -35,7 +35,7 @@
         </div>
 
         <div class="col-md-2">
-          <label for="owner_id" class="form-label">Owner</label>
+          <label for="owner_id" class="form-label">{{ t!("book.attributes.owner") }}</label>
 
           <select name="owner_id" class="form-select">
             <option></option>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="col-md-2">
-          <label for="current_holder_id" class="form-label">Current Holder</label>
+          <label for="current_holder_id" class="form-label">{{ t!("book.attributes.current_holder") }}</label>
 
           <select name="current_holder_id" class="form-select">
             <option></option>
@@ -79,11 +79,11 @@
         </div>
 
         <div class="col-md-1 d-flex align-items-end">
-          <input type="submit" value="Search" class="btn btn-info w-100">
+          <input type="submit" value='{{ t!("common.search") }}' class="btn btn-info w-100">
         </div>
 
         <div class="col-md-1 d-flex align-items-end">
-          <a href="/" class="btn btn-light">Reset</a>
+          <a href="/" class="btn btn-light">{{ t!("common.reset") }}</a>
         </div>
       </div>
     </form>
@@ -94,11 +94,11 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col">Author(s)</th>
-          <th scope="col">Owner</th>
-          <th scope="col">Current Holder</th>
-          <th scope="col">Actions</th>
+          <th scope="col">{{ t!("book.attributes.title") }}</th>
+          <th scope="col">{{ t!("book.attributes.authors") }}</th>
+          <th scope="col">{{ t!("book.attributes.owner") }}</th>
+          <th scope="col">{{ t!("book.attributes.current_holder") }}</th>
+          <th scope="col">{{ t!("common.actions") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -117,21 +117,21 @@
             {% endmatch %}
           </td>
           <td>
-            {{ dropdown::crud_dropdown_button(book_user.book, "Actions", "books") }}
+            {{ dropdown::crud_dropdown_button(book_user.book, t!("common.actions"), "books") }}
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    
+
     {% if total_page > 1 %}
       <div class="d-flex justify-content-center mt-1">
         <nav aria-label="Page navigation">
           <ul class="pagination">
             <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
-              <a class="page-link" href="/?{{ base_query }}page={% if current_page > 1 %}{{ current_page - 1 }}{% else %}1{% endif %}">Prev</a>
+              <a class="page-link" href="/?{{ base_query }}page={% if current_page > 1 %}{{ current_page - 1 }}{% else %}1{% endif %}">{{ t!("common.prev") }}</a>
             </li>
-        
+
             {% for page in 1..(total_page + 1) %}
               {% if page >= current_page - 1 && page <= current_page + 1 %}
                 <li class="page-item {% if page == current_page %}active{% endif %}">
@@ -141,7 +141,7 @@
             {% endfor %}
 
             <li class="page-item {% if current_page == total_page %}disabled{% endif %}">
-              <a class="page-link" href="/?{{ base_query }}page={{ current_page + 1 }}">Next</a>
+              <a class="page-link" href="/?{{ base_query }}page={{ current_page + 1 }}">{{ t!("common.next") }}</a>
             </li>
           </ul>
         </nav>

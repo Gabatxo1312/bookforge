@@ -273,13 +273,13 @@ pub async fn download_csv(
 
     let mut wtr = Writer::from_writer(vec![]);
     wtr.write_record(&[
-        "id",
+        "ID",
         "Title",
         "Author(s)",
-        "description",
-        "owner_id",
-        "current_holder_id",
-        "comment",
+        "Description",
+        "Owner",
+        "Current Holder",
+        "Comment",
     ])
     .context(CSVSnafu)?;
 

@@ -5,15 +5,15 @@
 {% import "components/inputs.html" as form_helpers %}
 
 {% block main %}
-  {% call typography::heading("All users") %}
-    <a class="btn-success btn" href="/users/new">Add User</a>
+  {% call typography::heading(t!("user.index.title")) %}
+    <a class="btn-success btn" href="/users/new">{{ t!("user.index.button") }}</a>
   {% endcall %}
 
   {% call cards::card() %}
     <form method="get">
       <div class="row">
         <div class="col-md-3">
-          <label for="name" class="form-label">Name</label>
+          <label for="name" class="form-label">{{ t!("user.attributes.name") }}</label>
           {% match query.name %}
             {% when Some with (value) %}
               <input type="text" name="name" value="{{ value }}" class="form-control" placeholder="Ex: Koprotkine">
@@ -23,11 +23,11 @@
         </div>
 
         <div class="col-md-1 d-flex align-items-end">
-          <input type="submit" value="Search" class="btn btn-info w-100">
+          <input type="submit" value='{{ t!("common.search") }}' class="btn btn-info w-100">
         </div>
 
         <div class="col-md-1 d-flex align-items-end">
-          <a href="/users" class="btn btn-light">Reset</a>
+          <a href="/users" class="btn btn-light">{{ t!("common.reset") }}</a>
         </div>
       </div>
     </form>
@@ -38,10 +38,10 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col">Owner book</th>
-          <th scope="col">Borrowed book</th>
-          <th scope="col">Actions</th>
+          <th scope="col">{{ t!("user.attributes.name") }}</th>
+          <th scope="col">{{ t!("user.attributes.owner_books") }}</th>
+          <th scope="col">{{ t!("user.attributes.borrowed_books") }}</th>
+          <th scope="col">{{ t!("common.actions") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -52,7 +52,7 @@
             <td>{{ user_information.owner_book_number }}</td>
             <td>{{ user_information.borrowed_book_number }}</td>
             <td>
-              {{ dropdown::crud_dropdown_button(user_information.user, "Actions", "users", show = false) }}
+              {{ dropdown::crud_dropdown_button(user_information.user, t!("common.actions"), "users", show = false) }}
             </td>
           </tr>
         {% endfor %}
