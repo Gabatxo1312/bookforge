@@ -11,6 +11,7 @@ common:
   search: Search
   reset: Reset
   show: Show
+  no_result: No results
   close: Close
   confirmation: Confirmation
   are_you_sure: Are you sure?
