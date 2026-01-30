@@ -4,7 +4,11 @@
 {% import "components/cards.html" as cards %}
 
 {% block main %}
-  {{ typography::heading("All books") }}
+  {% call typography::heading("All books") %}
+    <a href="/books/download_csv?{{ base_query }}" class="btn btn-info">
+      <i class="fa fa-download me-2" aria-hidden="true"></i> Download (csv)
+    </a>
+  {% endcall %}
 
   {% call cards::card() %}
     <form method="get">

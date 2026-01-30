@@ -4,15 +4,17 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::{
     Form,
+    body::Body,
     extract::{Path, Query, State},
-    response::{IntoResponse, Redirect},
+    response::{IntoResponse, Redirect, Response},
 };
+use csv::Writer;
 use serde::Deserialize;
 use serde_with::{NoneAsEmptyString, serde_as};
 use snafu::prelude::*;
 
-use crate::models::book::Model as BookModel;
-use crate::models::user::Model as UserModel;
+use crate::{models::book::Model as BookModel, state::error::CSVSnafu};
+use crate::{models::user::Model as UserModel, state::error::IOSnafu};
 
 use crate::{
     models::{book::BookOperator, user::UserOperator},
@@ -72,7 +74,7 @@ pub async fn index(
 
     // Get all Book filtered with query
     let books_paginate = BookOperator::new(state)
-        .list_paginate(page, Some(query.clone()))
+        .all_paginate(page, Some(query.clone()))
         .await
         .context(BookSnafu)?;
 
@@ -253,4 +255,76 @@ pub async fn delete(
         .context(BookSnafu)?;
 
     Ok(Redirect::to("/").into_response())
+}
+
+/// Download CSV filter (no paginate) of all books
+pub async fn download_csv(
+    State(state): State<AppState>,
+    Query(query): Query<IndexQuery>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    let books = BookOperator::new(state.clone())
+        .all_filtered(Some(query))
+        .await
+        .context(BookSnafu)?;
+
+    let users = UserOperator::new(state).all().await.context(UserSnafu)?;
+
+    let users_by_id: HashMap<i32, UserModel> = users.into_iter().map(|u| (u.id, u)).collect();
+
+    let mut wtr = Writer::from_writer(vec![]);
+    wtr.write_record(&[
+        "id",
+        "Title",
+        "Author(s)",
+        "description",
+        "owner_id",
+        "current_holder_id",
+        "comment",
+    ])
+    .context(CSVSnafu)?;
+
+    for book in books {
+        let owner_format = match users_by_id.get(&book.owner_id).cloned().ok_or(UserSnafu) {
+            Ok(owner) => format!("{} (id: {})", owner.name.to_string(), owner.id),
+            Err(_) => "-".to_string(),
+        };
+
+        let current_holder = match users_by_id
+            // if current_holder_id is None, take 0.
+            // So get returns errors because user with id 0 can't exist
+            .get(&book.current_holder_id.unwrap_or(0))
+            .cloned()
+            .ok_or(UserSnafu)
+        {
+            Ok(current_holder) => format!(
+                "{} (id: {})",
+                current_holder.name.to_string(),
+                current_holder.id
+            ),
+            Err(_) => "-".to_string(),
+        };
+
+        wtr.write_record(&[
+            book.id.to_string(),
+            book.title,
+            book.authors,
+            book.description.unwrap_or_default(),
+            owner_format,
+            current_holder,
+            book.comment.unwrap_or_default(),
+        ])
+        .context(CSVSnafu)?;
+    }
+
+    wtr.flush().context(IOSnafu)?;
+
+    let csv_bytes = wtr.into_inner();
+
+    match csv_bytes {
+        Ok(csv_bytes) => Ok(Response::builder()
+            .header("Content-Type", "text/csv")
+            .body(Body::from(csv_bytes))
+            .unwrap()),
+        Err(_) => Ok(Redirect::to("/").into_response()),
+    }
 }
