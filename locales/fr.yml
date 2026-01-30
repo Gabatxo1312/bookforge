@@ -28,14 +28,17 @@ user:
     owner_books: Livres possédés
     borrowed_books: Livres empruntés
   index:
-    title: Tous les utilisateurs
-    button: Ajouter un utilisateur
+    title_tag: Liste des utilisateur.ice.s | BookForge
+    title: Tous les utilisateur.ice.s
+    button: Ajouter un.e utilisateur.ice
   edit:
+    title_tag: Modifier l'utilisateur.ice | BookForge
     title: Modifier
-    button: Modifier l'utilisateur
+    button: Modifier l'utilisateur.ice
   new:
-    title: Nouvel utilisateur
-    button: Créer l'utilisateur
+    title_tag: Nouvel utilisateur.ice | BookForge
+    title: Nouvel utilisateur.ice
+    button: Créer l'utilisateur.ice
 book:
   attributes:
     title: Titre
@@ -45,24 +48,30 @@ book:
     current_holder: Détenteur.ice actuel.le
     comment: Commentaire
   index:
+    title_tag: Liste des livres | BookForge
     title: Tous les livres
   new:
+    title_tag: Nouveau livre | BookForge
     title: Nouveau livre
     button: Créer le livre
     button_short: Ajouter un livre
   edit:
+    title_tag: Modifier le livre | BookForge
     title: Modifier le livre
     button: Modifier le livre
   show:
+    title_tag: Details | BookForge
     book_details: Détails du livre
-    user_details: Détails de l'utilisateur
+    user_details: Détails de l'utilisateur.ice
     more_informations: Plus d'informations
 footer:
   message: Fait avec amour & Nique les fachos !
 error:
   error_404:
+    title_tag: Erreur 404 | BookForge
     title: Oups ! Cette page n'existe pas
     subtitle: 404 NOT FOUND
     button: Retour à l'accueil
   generic:
+    title_tag: Erreur | BookForge
     title: Oups ! Une erreur s'est produite

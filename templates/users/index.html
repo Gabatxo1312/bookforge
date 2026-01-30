@@ -4,6 +4,10 @@
 {% import "components/cards.html" as cards %}
 {% import "components/inputs.html" as form_helpers %}
 
+{% block title %}
+    {{ t!("user.index.title_tag") }}
+{% endblock %}
+
 {% block main %}
   {% call typography::heading(t!("user.index.title")) %}
     <a class="btn-success btn" href="/users/new">{{ t!("user.index.button") }}</a>

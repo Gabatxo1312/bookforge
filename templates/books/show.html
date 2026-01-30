@@ -4,12 +4,16 @@
 {% import "components/fields.html" as fields %}
 {% import "components/cards.html" as cards %}
 
+{% block title %}
+    {{ t!("book.show.title_tag") }}
+{% endblock %}
+
 {% block main %}
   {{ typography::book_heading(book.title, book, show = false) }}
 
   {% call cards::card() %}
-    <div class="mt-4">
-      <h5 class="mt-4 fw-bold">{{ t!("book.show.book_details") }}</h5>
+    <div class="">
+      <h5 class="fw-bold text-decoration-underline">{{ t!("book.show.book_details") }}</h5>
       {{ fields::field(t!("book.attributes.title"), book.title) }}
       {{ fields::field(t!("book.attributes.authors"), book.authors) }}
 
@@ -20,7 +24,7 @@
         {{ fields::field(t!("book.attributes.description"), "-") }}
       {% endmatch %}
 
-      <h5 class="mt-50px fw-bold">{{ t!("book.show.user_details") }}</h5>
+      <h5 class="mt-50px fw-bold text-decoration-underline">{{ t!("book.show.user_details") }}</h5>
       {{ fields::field(t!("book.attributes.owner"), owner.name) }}
 
       {% match current_holder %}
@@ -31,7 +35,7 @@
       {% endmatch %}
 
 
-      <h5 class="mt-50px fw-bold">{{ t!("book.show.more_informations") }}</h5>
+      <h5 class="mt-50px fw-bold text-decoration-underline">{{ t!("book.show.more_informations") }}</h5>
       {% match book.comment %}
       {% when Some with (comment) %}
         {{ fields::field(t!("book.attributes.comment"), comment) }}

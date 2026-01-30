@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% import "components/typography.html" as typography %}
 {% import "components/cards.html" as cards %}
-o{% import "components/inputs.html" as form_helpers %}
+{% import "components/inputs.html" as form_helpers %}
+
+{% block title %}
+    {{ t!("book.edit.title_tag") }}
+{% endblock %}
 
 {% block main %}
   {{ typography::heading(t!("user.edit.title")) }}

@@ -2,6 +2,10 @@
 {% import "components/typography.html" as typography %}
 {% import "components/cards.html" as cards %}
 
+{% block title %}
+    {{ t!("book.edit.title_tag") }}
+{% endblock %}
+
 {% block main %}
   {{ typography::heading(t!("book.edit.title")) }}
 
