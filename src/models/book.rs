@@ -70,7 +70,7 @@ impl BookOperator {
     /// Lists all books matching the optional query filters.
     ///
     /// Results are ordered by ID in descending order (newest first).
-    pub async fn list(&self) -> Result<Vec<Model>, BookError> {
+    pub async fn all(&self) -> Result<Vec<Model>, BookError> {
         Entity::find()
             .order_by_desc(Column::Id)
             .all(&self.state.db)

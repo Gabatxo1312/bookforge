@@ -66,7 +66,7 @@ pub async fn index(
 
     // Get all Users
     let users = UserOperator::new(state.clone())
-        .list()
+        .all()
         .await
         .context(UserSnafu)?;
 
@@ -203,7 +203,7 @@ struct NewBookTemplate {
 pub async fn new(
     State(state): State<AppState>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let users = UserOperator::new(state).list().await.context(UserSnafu)?;
+    let users = UserOperator::new(state).all().await.context(UserSnafu)?;
 
     Ok(NewBookTemplate { users })
 }
@@ -220,7 +220,7 @@ pub async fn edit(
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
     let users = UserOperator::new(state.clone())
-        .list()
+        .all()
         .await
         .context(UserSnafu)?;
     let book = BookOperator::new(state)

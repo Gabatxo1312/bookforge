@@ -1,9 +1,11 @@
 use crate::models::book;
 use crate::routes::book::BookForm;
+use crate::routes::user::IndexQuery;
 use crate::routes::user::UserForm;
 use crate::state::AppState;
 use crate::state::error::UserSnafu;
 use sea_orm::ActiveValue::Set;
+use sea_orm::Condition;
 use sea_orm::DeleteResult;
 use sea_orm::entity::prelude::*;
 use snafu::ResultExt;
@@ -53,8 +55,21 @@ impl UserOperator {
         Self { state }
     }
 
-    pub async fn list(&self) -> Result<Vec<Model>, UserError> {
+    pub async fn all(&self) -> Result<Vec<Model>, UserError> {
         Entity::find().all(&self.state.db).await.context(DBSnafu)
+    }
+
+    pub async fn all_filtered(&self, query: IndexQuery) -> Result<Vec<Model>, UserError> {
+        let mut conditions = Condition::all();
+        if let Some(name) = query.name {
+            conditions = conditions.add(Column::Name.contains(name))
+        }
+
+        Entity::find()
+            .filter(conditions)
+            .all(&self.state.db)
+            .await
+            .context(DBSnafu)
     }
 
     pub async fn find_by_id(&self, id: i32) -> Result<Model, UserError> {

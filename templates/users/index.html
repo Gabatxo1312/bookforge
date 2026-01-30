@@ -10,6 +10,30 @@
   {% endcall %}
 
   {% call cards::card() %}
+    <form method="get">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="name" class="form-label">Name</label>
+          {% match query.name %}
+            {% when Some with (value) %}
+              <input type="text" name="name" value="{{ value }}" class="form-control" placeholder="Ex: Koprotkine">
+            {% when None %}
+              <input type="text" name="name" class="form-control" placeholder="Ex: Koprotkine">
+          {% endmatch %}
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+          <input type="submit" value="Search" class="btn btn-info w-100">
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+          <a href="/users" class="btn btn-light">Reset</a>
+        </div>
+      </div>
+    </form>
+  {% endcall %}
+
+  {% call cards::card() %}
     <table class="table table-hover">
       <thead>
         <tr>

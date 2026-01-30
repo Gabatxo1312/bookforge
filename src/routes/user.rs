@@ -4,10 +4,11 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::{
     Form,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     response::Redirect,
 };
 use serde::Deserialize;
+use serde_with::{NoneAsEmptyString, serde_as};
 use snafu::prelude::*;
 
 use crate::{
@@ -25,6 +26,7 @@ use crate::{
 #[template(path = "users/index.html")]
 struct UsersIndexTemplate {
     user_with_books_number: Vec<UserWithBookNumber>,
+    query: IndexQuery,
 }
 
 pub struct UserWithBookNumber {
@@ -36,16 +38,25 @@ pub struct UserWithBookNumber {
     pub borrowed_book_number: usize,
 }
 
+#[serde_as]
+#[derive(Deserialize, Clone)]
+pub struct IndexQuery {
+    #[serde(default)]
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub name: Option<String>,
+}
+
 pub async fn index(
     State(state): State<AppState>,
+    Query(query): Query<IndexQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
     let users = UserOperator::new(state.clone())
-        .list()
+        .all_filtered(query.clone())
         .await
         .context(UserSnafu)?;
 
     let books = BookOperator::new(state.clone())
-        .list()
+        .all()
         .await
         .context(BookSnafu)?;
 
@@ -74,6 +85,7 @@ pub async fn index(
 
     Ok(UsersIndexTemplate {
         user_with_books_number: result,
+        query,
     })
 }
 
