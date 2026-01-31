@@ -13,9 +13,7 @@ use serde::Deserialize;
 use serde_with::{NoneAsEmptyString, serde_as};
 use snafu::prelude::*;
 
-use crate::{
-    models::book::Model as BookModel, routes::template_ctx::TemplateCtx, state::error::CSVSnafu,
-};
+use crate::{models::book::Model as BookModel, routes::router::Router, state::error::CSVSnafu};
 use crate::{models::user::Model as UserModel, state::error::IOSnafu};
 
 use crate::{
@@ -57,7 +55,7 @@ struct BookIndexTemplate {
     current_page: u64,
     total_page: u64,
     base_query: String,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn index(
@@ -130,7 +128,7 @@ pub async fn index(
         current_page: books_paginate.current_page,
         total_page: books_paginate.total_page,
         base_query,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })
@@ -142,7 +140,7 @@ struct ShowBookTemplate {
     book: BookModel,
     owner: UserModel,
     current_holder: Option<UserModel>,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn show(
@@ -175,7 +173,7 @@ pub async fn show(
         book,
         owner,
         current_holder,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })
@@ -210,7 +208,7 @@ pub async fn create(
 #[template(path = "books/new.html")]
 struct NewBookTemplate {
     users: Vec<UserModel>,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn new(
@@ -223,7 +221,7 @@ pub async fn new(
 
     Ok(NewBookTemplate {
         users,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })
@@ -234,7 +232,7 @@ pub async fn new(
 struct EditBookTemplate {
     users: Vec<UserModel>,
     book: BookModel,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn edit(
@@ -253,7 +251,7 @@ pub async fn edit(
     Ok(EditBookTemplate {
         users,
         book,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })

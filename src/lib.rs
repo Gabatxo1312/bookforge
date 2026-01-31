@@ -7,7 +7,8 @@ use axum::{
 };
 use static_serve::embed_assets;
 
-use crate::{routes::template_ctx::TemplateCtx, state::AppState};
+use crate::routes::router::Router as InternalRouter;
+use crate::state::AppState;
 
 mod migrations;
 mod models;
@@ -46,12 +47,12 @@ pub fn build_app(state: AppState) -> Router {
 #[derive(Template, WebTemplate)]
 #[template(path = "404.html")]
 struct NotFoundTemplate {
-    pub ctx: TemplateCtx,
+    pub router: InternalRouter,
 }
 
 pub async fn error_handler(State(state): State<AppState>) -> impl axum::response::IntoResponse {
     NotFoundTemplate {
-        ctx: TemplateCtx {
+        router: InternalRouter {
             base_path: state.config.base_path,
         },
     }

@@ -18,9 +18,9 @@
     </button>
     <ul class="dropdown-menu">
       {% if show %}
-        <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}">{{ t!("common.show") }}</a></li>
+        <li><a class="dropdown-item" href="{{ router.root_path() }}{{ sub_path }}/{{ book.id }}">{{ t!("common.show") }}</a></li>
       {% endif %}
-      <li><a class="dropdown-item" href="/{{ sub_path }}/{{ book.id }}/edit">{{ t!("common.edit") }}</a></li>
+      <li><a class="dropdown-item" href="{{ router.root_path() }}{{ sub_path }}/{{ book.id }}/edit">{{ t!("common.edit") }}</a></li>
       <li>
         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ book.id }}">{{ t!("common.delete") }}</a>
       </li>
@@ -40,7 +40,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t!("common.close") }}</button>
-          <form method="post" action="/{{ sub_path }}/{{ book.id }}/delete" class="m-0">
+          <form method="post" action="{{ router.root_path() }}{{ sub_path }}/{{ book.id }}/delete" class="m-0">
             <input class="btn btn-danger" type="submit" value='{{ t!("common.delete") }}'>
           </form>
         </div>
