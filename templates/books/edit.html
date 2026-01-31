@@ -10,7 +10,7 @@
   {{ typography::heading(t!("book.edit.title")) }}
 
   {% call cards::card() %}
-    <form method="post" action="/books/{{ book.id }}">
+    <form method="post" action="{{ router.update_book_path(&book.id) }}">
       <div class="mb-3">
         <label class="form-label" for="title">{{ t!("book.attributes.title") }}</label>
         <input type="text" name="title" class="form-control" value="{{ book.title }}" required>

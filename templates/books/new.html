@@ -11,7 +11,7 @@
   {{ typography::heading(t!("book.new.title")) }}
 
   {% call cards::card() %}
-    <form method="post" action="/books">
+    <form method="post" action="{{ router.create_book_path() }}">
       {{ form_helpers::input("title", t!("book.attributes.title"), is_required = true, placeholder = "Ex: La Petite Dernière") }}
       {{ form_helpers::input("authors", t!("book.attributes.authors"), is_required = true, placeholder = "Ex: Fatima Daas") }}
 

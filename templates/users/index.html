@@ -10,7 +10,7 @@
 
 {% block main %}
   {% call typography::heading(t!("user.index.title")) %}
-    <a class="btn-success btn" href="/users/new">{{ t!("user.index.button") }}</a>
+    <a class="btn-success btn" href="{{ router.new_user_path() }}">{{ t!("user.index.button") }}</a>
   {% endcall %}
 
   {% call cards::card() %}
@@ -42,7 +42,7 @@
       <div class="d-flex flex-column align-items-center justify-content-center">
         <h2>{{ t!("common.no_result") }}</h2>
 
-        <a class="btn btn-success text-white text-nowrap mt-3" href="//new">
+        <a class="btn btn-success text-white text-nowrap mt-3" href="{{ router.new_user_path() }}">
           {{ t!("user.index.button") }}
         </a>
       </div>

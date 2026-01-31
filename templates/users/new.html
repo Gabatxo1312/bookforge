@@ -11,7 +11,7 @@
   {{ typography::heading(t!("user.new.title")) }}
 
   {% call cards::card() %}
-    <form action="/users" method="post">
+    <form action="{{ router.create_user_path() }}" method="post">
       <div class="row align-items-end">
        <div class="col-md-10">
           {{ form_helpers::input("name", t!("user.attributes.name"), is_required = true, placeholder = "Ex: Kropotkine", margin_bottom = false) }}

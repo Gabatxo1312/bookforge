@@ -9,7 +9,7 @@
 
 {% block main %}
   {% call typography::heading(t!("book.index.title")) %}
-    <a href="/books/download_csv?{{ base_query }}" class="btn btn-info">
+    <a href="{{ router.download_csv_book_path() }}?{{ base_query }}" class="btn btn-info">
       <i class="fa fa-download me-2" aria-hidden="true"></i> {{ t!("common.download") }} (csv)
     </a>
   {% endcall %}
@@ -87,7 +87,7 @@
         </div>
 
         <div class="col-md-1 d-flex align-items-end">
-          <a href="/" class="btn btn-light">{{ t!("common.reset") }}</a>
+          <a href="{{ router.root_path() }}" class="btn btn-light">{{ t!("common.reset") }}</a>
         </div>
       </div>
     </form>
@@ -98,7 +98,7 @@
       <div class="d-flex flex-column align-items-center justify-content-center">
         <h2>{{ t!("common.no_result") }}</h2>
 
-        <a class="btn btn-success text-white text-nowrap mt-3" href="/books/new">
+        <a class="btn btn-success text-white text-nowrap mt-3" href="{{ router.new_book_path() }}">
           {{ t!("book.new.button_short") }}
         </a>
       </div>
@@ -142,19 +142,19 @@
           <nav aria-label="Page navigation">
             <ul class="pagination">
               <li class="page-item {% if current_page <= 1 %}disabled{% endif %}">
-                <a class="page-link" href="/?{{ base_query }}page={% if current_page > 1 %}{{ current_page - 1 }}{% else %}1{% endif %}">{{ t!("common.prev") }}</a>
+                <a class="page-link" href="{{ router.root_path() }}?{{ base_query }}page={% if current_page > 1 %}{{ current_page - 1 }}{% else %}1{% endif %}">{{ t!("common.previous") }}</a>
               </li>
 
               {% for page in 1..(total_page + 1) %}
                 {% if page >= current_page - 1 && page <= current_page + 1 %}
                   <li class="page-item {% if page == current_page %}active{% endif %}">
-                    <a class="page-link" href="/?{{ base_query }}page={{ page }}">{{ page }}</a>
+                    <a class="page-link" href="{{ router.root_path() }}?{{ base_query }}page={{ page }}">{{ page }}</a>
                   </li>
                 {% endif %}
               {% endfor %}
 
               <li class="page-item {% if current_page == total_page %}disabled{% endif %}">
-                <a class="page-link" href="/?{{ base_query }}page={{ current_page + 1 }}">{{ t!("common.next") }}</a>
+                <a class="page-link" href="{{ router.root_path() }}?{{ base_query }}page={{ current_page + 1 }}">{{ t!("common.next") }}</a>
               </li>
             </ul>
           </nav>

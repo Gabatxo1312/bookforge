@@ -16,7 +16,7 @@ use crate::{
         book::BookOperator,
         user::{self, UserOperator},
     },
-    routes::template_ctx::TemplateCtx,
+    routes::router::Router,
     state::{
         AppState,
         error::{AppStateError, BookSnafu, UserSnafu},
@@ -28,7 +28,7 @@ use crate::{
 struct UsersIndexTemplate {
     users_with_books_number: Vec<UserWithBookNumber>,
     query: IndexQuery,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub struct UserWithBookNumber {
@@ -88,7 +88,7 @@ pub async fn index(
     Ok(UsersIndexTemplate {
         users_with_books_number: result,
         query,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })
@@ -140,7 +140,7 @@ pub async fn delete(
 #[template(path = "users/edit.html")]
 struct EditTemplate {
     user: user::Model,
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn edit(
@@ -154,7 +154,7 @@ pub async fn edit(
 
     Ok(EditTemplate {
         user,
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     })
@@ -163,12 +163,12 @@ pub async fn edit(
 #[derive(Template, WebTemplate)]
 #[template(path = "users/new.html")]
 struct NewTemplate {
-    ctx: TemplateCtx,
+    router: Router,
 }
 
 pub async fn new(State(state): State<AppState>) -> impl axum::response::IntoResponse {
     NewTemplate {
-        ctx: TemplateCtx {
+        router: Router {
             base_path: state.config.base_path,
         },
     }
