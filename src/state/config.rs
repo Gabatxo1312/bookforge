@@ -89,7 +89,7 @@ impl AppConfig {
         let mut config_dir = Utf8PathBuf::from_path_buf(config_dir().unwrap()).unwrap();
         config_dir.push("bookforge");
 
-        return config_dir;
+        config_dir
     }
 
     fn config_file_path() -> Utf8PathBuf {

@@ -95,7 +95,7 @@ impl UserOperator {
     }
 
     pub async fn update(&self, id: i32, form: UserForm) -> Result<Model, UserError> {
-        let user_by_id = Self::find_by_id(&self, id).await.context(UserSnafu);
+        let user_by_id = Self::find_by_id(self, id).await.context(UserSnafu);
 
         if let Ok(user) = user_by_id {
             let mut user: ActiveModel = user.into();

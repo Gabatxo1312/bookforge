@@ -160,8 +160,8 @@ impl BookOperator {
         let book = ActiveModel {
             title: Set(form.title.clone()),
             authors: Set(form.authors.clone()),
-            owner_id: Set(form.owner_id.clone()),
-            current_holder_id: Set(form.current_holder_id.clone()),
+            owner_id: Set(form.owner_id),
+            current_holder_id: Set(form.current_holder_id),
             description: Set(form.description.clone()),
             comment: Set(form.comment.clone()),
             ..Default::default()
@@ -175,15 +175,15 @@ impl BookOperator {
     /// # Error
     /// Returns BookError::NotFound if id is not found in database
     pub async fn update(&self, id: i32, form: BookForm) -> Result<Model, BookError> {
-        let book_by_id = Self::find_by_id(&self, id).await.context(BookSnafu);
+        let book_by_id = Self::find_by_id(self, id).await.context(BookSnafu);
 
         if let Ok(book) = book_by_id {
             let mut book: ActiveModel = book.into();
 
             book.title = Set(form.title.clone());
             book.authors = Set(form.authors.clone());
-            book.owner_id = Set(form.owner_id.clone());
-            book.current_holder_id = Set(form.current_holder_id.clone());
+            book.owner_id = Set(form.owner_id);
+            book.current_holder_id = Set(form.current_holder_id);
             book.description = Set(form.description.clone());
             book.comment = Set(form.comment.clone());
 
@@ -225,6 +225,6 @@ impl BookOperator {
                 conditions = conditions.add(Column::CurrentHolderId.eq(current_holder_id));
             }
         }
-        return conditions;
+        conditions
     }
 }

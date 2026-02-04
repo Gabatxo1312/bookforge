@@ -296,7 +296,7 @@ pub async fn download_csv(
     let users_by_id: HashMap<i32, UserModel> = users.into_iter().map(|u| (u.id, u)).collect();
 
     let mut wtr = Writer::from_writer(vec![]);
-    wtr.write_record(&[
+    wtr.write_record([
         "ID",
         "Title",
         "Author(s)",
@@ -309,7 +309,7 @@ pub async fn download_csv(
 
     for book in books {
         let owner_format = match users_by_id.get(&book.owner_id).cloned().ok_or(UserSnafu) {
-            Ok(owner) => format!("{} (id: {})", owner.name.to_string(), owner.id),
+            Ok(owner) => format!("{} (id: {})", owner.name, owner.id),
             Err(_) => "-".to_string(),
         };
 
@@ -320,11 +320,7 @@ pub async fn download_csv(
             .cloned()
             .ok_or(UserSnafu)
         {
-            Ok(current_holder) => format!(
-                "{} (id: {})",
-                current_holder.name.to_string(),
-                current_holder.id
-            ),
+            Ok(current_holder) => format!("{} (id: {})", current_holder.name, current_holder.id),
             Err(_) => "-".to_string(),
         };
 
