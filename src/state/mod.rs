@@ -5,6 +5,7 @@ use crate::{migrations::Migrator, state::config::AppConfig};
 use error::*;
 use sea_orm_migration::MigratorTrait;
 
+pub mod api_config;
 pub mod config;
 pub mod error;
 pub mod listener;

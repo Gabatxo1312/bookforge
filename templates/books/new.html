@@ -11,6 +11,24 @@
   {{ typography::heading(t!("book.new.title")) }}
 
   {% call cards::card() %}
+    <h3 class="mb-4">{{ t!("book.new.automatic_search") }}</h3>
+    
+    <form method="get" action="{{ router.search_books_path() }}">
+      {{ form_helpers::input("title", t!("book.attributes.title"), is_required = false, placeholder = "Ex: La Petite Dernière") }}
+
+      {% call(option) form_helpers::select("owner_id", t!("book.attributes.owner"), users, is_required = true) %}
+        <option value="{{ option.id }}">{{ option.name }}</option>
+      {% endcall %}
+
+      <div class="mt-4 text-center">
+        <input type="submit" value='{{ t!("common.search") }}' class="btn btn-success">
+      </div>
+    </form>
+  {% endcall %}
+
+  {% call cards::card() %}
+    <h3 class="mb-4">Ajouter le livre manuellement</h3>
+
     <form method="post" action="{{ router.create_book_path() }}">
       {{ form_helpers::input("title", t!("book.attributes.title"), is_required = true, placeholder = "Ex: La Petite Dernière") }}
       {{ form_helpers::input("authors", t!("book.attributes.authors"), is_required = true, placeholder = "Ex: Fatima Daas") }}
