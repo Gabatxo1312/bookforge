@@ -34,6 +34,10 @@ impl Router {
         format!("{}/books/download_csv", &self.base_path)
     }
 
+    pub fn search_books_path(&self) -> String {
+        format!("{}/books/search", &self.base_path)
+    }
+
     // USERS
 
     pub fn index_user_path(&self) -> String {

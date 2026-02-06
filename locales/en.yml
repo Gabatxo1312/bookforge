@@ -10,12 +10,14 @@ common:
   previous: Previous
   actions: Actions
   search: Search
+  filter: search
   reset: Reset
   show: Show
   no_result: No results
   close: Close
   confirmation: Confirmation
   are_you_sure: Are you sure?
+  by: by
 
 nav:
   toggle: Toggle navigation
@@ -53,6 +55,7 @@ book:
     authors: Author(s)
     description: Description
     owner: Owner
+    isbn: ISBN
     current_holder: Current holder
     comment: Comment
 
@@ -60,7 +63,12 @@ book:
     title_tag: Books list | BookForge
     title: All Books
 
+  search:
+    title: Résultat de la recherche
+    title_tag: Results | BookForge
+
   new:
+    automatic_search: Search book (Google Book)
     title_tag: New book | BookForge
     title: New Book
     button: Create book

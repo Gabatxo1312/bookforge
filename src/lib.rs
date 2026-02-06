@@ -32,6 +32,7 @@ pub fn build_app(state: AppState) -> Router {
         .route("/books/{id}", post(routes::book::update))
         .route("/books/{id}/delete", post(routes::book::delete))
         .route("/books/{id}/edit", get(routes::book::edit))
+        .route("/books/search", get(routes::book::search))
         .route("/books/download_csv", get(routes::book::download_csv))
         .route("/users", get(routes::user::index))
         .route("/users/new", get(routes::user::new))

@@ -8,13 +8,15 @@ common:
   next: Suivant
   previous: Précédent
   actions: Actions
-  search: Filtrer
+  search: Rechercher
+  filter: Filtrer
   reset: Réini.
   show: Voir
   no_result: Aucun résultat
   close: Fermer
   confirmation: Confirmation
   are_you_sure: Êtes-vous sûr ?
+  by: par
 nav:
   toggle: Basculer la navigation
   books: Livres
@@ -47,10 +49,15 @@ book:
     owner: Propriétaire
     current_holder: Détenteur.ice actuel.le
     comment: Commentaire
+    isbn: Numero ISBN
   index:
     title_tag: Liste des livres | BookForge
     title: Tous les livres
+  search:
+    title: Résultat de la recherche
+    title_tag: Résultat | BookForge
   new:
+    automatic_search: Rechercher un livre (Google Book)
     title_tag: Nouveau livre | BookForge
     title: Nouveau livre
     button: Créer le livre

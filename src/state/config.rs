@@ -5,7 +5,7 @@ use camino::Utf8PathBuf;
 use dirs::config_dir;
 use serde::{Deserialize, Serialize};
 
-use crate::state::listener::Listener;
+use crate::state::{api_config::ApiConfig, listener::Listener};
 
 #[derive(Snafu, Debug)]
 pub enum ConfigError {
@@ -35,6 +35,7 @@ pub struct AppConfig {
     pub locale: String,
     pub base_path: String,
     pub listener: Listener,
+    pub api_config: ApiConfig,
 }
 
 impl Default for AppConfig {
@@ -44,6 +45,7 @@ impl Default for AppConfig {
             base_path: Self::default_base_path(),
             locale: Self::default_locale(),
             listener: Listener::default(),
+            api_config: ApiConfig::default(),
         }
     }
 }

@@ -42,6 +42,10 @@ pub enum AppStateError {
     IO {
         source: std::io::Error,
     },
+    #[snafu(display("Google Books Error"))]
+    GoogleBook {
+        source: googlebooks_rs::errors::AppError,
+    },
 }
 
 #[derive(Template, WebTemplate)]

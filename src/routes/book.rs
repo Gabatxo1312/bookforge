@@ -9,11 +9,16 @@ use axum::{
     response::{IntoResponse, Redirect, Response},
 };
 use csv::Writer;
+use googlebooks_rs::{GoogleBooks, models::VolumeResponse, queries::VolumeQuery};
 use serde::Deserialize;
 use serde_with::{NoneAsEmptyString, serde_as};
 use snafu::prelude::*;
 
-use crate::{models::book::Model as BookModel, routes::router::Router, state::error::CSVSnafu};
+use crate::{
+    models::book::Model as BookModel,
+    routes::router::Router,
+    state::error::{CSVSnafu, GoogleBookSnafu},
+};
 use crate::{models::user::Model as UserModel, state::error::IOSnafu};
 
 use crate::{
@@ -269,6 +274,50 @@ pub async fn update(
 
     Ok(Redirect::to(&format!("/books/{}", id)).into_response())
 }
+
+#[derive(Template, WebTemplate)]
+#[template(path = "books/search.html")]
+struct SearchBookTemplate {
+    result: Option<VolumeResponse>,
+    owner_id: i32,
+    router: Router,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SearchForm {
+    pub title: Option<String>,
+    pub owner_id: i32,
+}
+
+pub async fn search(
+    State(state): State<AppState>,
+    Query(form): Query<SearchForm>,
+) -> Result<impl axum::response::IntoResponse, AppStateError> {
+    println!("{:#?}", form);
+
+    let api_key = state.config.api_config.google_books_api_key;
+    let client = GoogleBooks::new(Some(api_key.to_string()));
+
+    let result = if let Some(title) = form.title {
+        Some(
+            client
+                .search(VolumeQuery::title(title).max_results(5))
+                .await
+                .context(GoogleBookSnafu)?,
+        )
+    } else {
+        None
+    };
+
+    Ok(SearchBookTemplate {
+        result,
+        owner_id: form.owner_id,
+        router: Router {
+            base_path: state.config.base_path,
+        },
+    })
+}
+
 pub async fn delete(
     State(state): State<AppState>,
     Path(id): Path<i32>,
