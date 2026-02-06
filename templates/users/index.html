@@ -26,11 +26,11 @@
           {% endmatch %}
         </div>
 
-        <div class="col-md-1 d-flex align-items-end">
-          <input type="submit" value='{{ t!("common.search") }}' class="btn btn-info w-100">
+        <div class="col-md-2 d-flex align-items-end mt-3 mt-md-0">
+          <input type="submit" value='{{ t!("common.filter") }}' class="btn btn-info w-100">
         </div>
 
-        <div class="col-md-1 d-flex align-items-end">
+        <div class="col-md-3 d-flex align-items-end mt-3 mt-md-0">
           <a href="/users" class="btn btn-light">{{ t!("common.reset") }}</a>
         </div>
       </div>
@@ -47,30 +47,32 @@
         </a>
       </div>
     {% else %}
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">{{ t!("user.attributes.name") }}</th>
-            <th scope="col">{{ t!("user.attributes.owner_books") }}</th>
-            <th scope="col">{{ t!("user.attributes.borrowed_books") }}</th>
-            <th scope="col">{{ t!("common.actions") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user_information in users_with_books_number %}
-            <tr class="align-middle">
-              <th scope="row">{{ user_information.user.id }}</th>
-              <td>{{ user_information.user.name }}</td>
-              <td>{{ user_information.owner_book_number }}</td>
-              <td>{{ user_information.borrowed_book_number }}</td>
-              <td>
-                {{ dropdown::crud_dropdown_button(user_information.user, t!("common.actions"), "users", show = false) }}
-              </td>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">{{ t!("user.attributes.name") }}</th>
+              <th scope="col">{{ t!("user.attributes.owner_books") }}</th>
+              <th scope="col">{{ t!("user.attributes.borrowed_books") }}</th>
+              <th scope="col">{{ t!("common.actions") }}</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>    
+          </thead>
+          <tbody>
+            {% for user_information in users_with_books_number %}
+              <tr class="align-middle">
+                <th scope="row">{{ user_information.user.id }}</th>
+                <td>{{ user_information.user.name }}</td>
+                <td>{{ user_information.owner_book_number }}</td>
+                <td>{{ user_information.borrowed_book_number }}</td>
+                <td>
+                  {{ dropdown::crud_dropdown_button(user_information.user, t!("common.actions"), "users", show = false) }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>    
+      </div>
     {% endif %}
   {% endcall %}
 {% endblock %}
