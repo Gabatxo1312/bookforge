@@ -278,15 +278,16 @@ pub async fn update(
 #[derive(Template, WebTemplate)]
 #[template(path = "books/search.html")]
 struct SearchBookTemplate {
-    result: Option<VolumeResponse>,
+    result: VolumeResponse,
     owner_id: i32,
     router: Router,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct SearchForm {
-    pub title: Option<String>,
+    pub title: String,
     pub owner_id: i32,
+    pub authors: Option<String>,
 }
 
 pub async fn search(
@@ -298,16 +299,15 @@ pub async fn search(
     let api_key = state.config.api_config.google_books_api_key;
     let client = GoogleBooks::new(Some(api_key.to_string()));
 
-    let result = if let Some(title) = form.title {
-        Some(
-            client
-                .search(VolumeQuery::title(title).max_results(5))
-                .await
-                .context(GoogleBookSnafu)?,
-        )
+    let query = if let Some(authors) = form.authors {
+        VolumeQuery::title(form.title)
+            .and_author(authors)
+            .max_results(5)
     } else {
-        None
+        VolumeQuery::title(form.title).max_results(5)
     };
+
+    let result = client.search(query).await.context(GoogleBookSnafu)?;
 
     Ok(SearchBookTemplate {
         result,

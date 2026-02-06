@@ -14,7 +14,8 @@
     <h3 class="mb-4">{{ t!("book.new.automatic_search") }}</h3>
     
     <form method="get" action="{{ router.search_books_path() }}">
-      {{ form_helpers::input("title", t!("book.attributes.title"), is_required = false, placeholder = "Ex: La Petite Dernière") }}
+      {{ form_helpers::input("title", t!("book.attributes.title"), is_required = true, placeholder = "Ex: La Petite Dernière") }}
+      {{ form_helpers::input("authors", t!("book.attributes.authors"), is_required = false, placeholder = "Ex: Fatima Daas") }}
 
       {% call(option) form_helpers::select("owner_id", t!("book.attributes.owner"), users, is_required = true) %}
         <option value="{{ option.id }}">{{ option.name }}</option>

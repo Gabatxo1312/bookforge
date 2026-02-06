@@ -1188,9 +1188,9 @@ dependencies = [
 
 [[package]]
 name = "googlebooks-rs"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e45d6ef5165061f3a679665803cb6386f09dff0e571911e3867f40f5efb28b24"
+checksum = "5cc7dd39d0f0ac1a912107f1e189e2a92ed3f3332370f95fe726da0c747db0ef"
 dependencies = [
  "http",
  "reqwest",

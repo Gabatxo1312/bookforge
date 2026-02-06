@@ -10,54 +10,50 @@
 {% block main %}
   {{ typography::heading(t!("book.search.title")) }}
 
-  {% if let Some(result_test) = result %}
-    {% if let Some(books) = result_test.items %}
-      {% for book in books %}          
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-2 text-center">
-                {% if let Some(image_links) = book.volume_info.image_links %}
-                  <img src="{{ image_links.thumbnail }}" />
+  {% if let Some(books) = result.items %}
+    {% for book in books %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-2 text-center">
+              {% if let Some(image_links) = book.volume_info.image_links %}
+                {% if let Some(thumbnail) = image_links.thumbnail %}
+                  <img src="{{ thumbnail }}" />
                 {% endif %}
-              </div>
-              <div class="col-md-9">
-                <h5 class="card-title">
-                  {{ book.volume_info.title }} {{ t!("common.by") }}
-                  <i>
-                    {% if let Some(authors) = book.volume_info.authors %}
-                      {{ authors | join(", ") }}
-                    {% endif %}
-                  </i>
-                </h5>
-                <p class="card-text">
-                  {% if let Some(description) = book.volume_info.description %}
-                    {{ description | truncate(300) }},
-                  {% endif %}
-                </p>
-                <form method="post" action="{{ router.create_book_path() }}">
-                  <input type="hidden" name="title" value="{{ book.volume_info.title }}">
-                  {% if let Some(description) = book.volume_info.description %}
-                    <input type="hidden" name="description" value="{{ description }}">
-                  {% endif %}
+              {% endif %}
+            </div>
+            <div class="col-md-9">
+              <h5 class="card-title">
+                {{ book.volume_info.title }} {{ t!("common.by") }}
+                <i>
                   {% if let Some(authors) = book.volume_info.authors %}
-                    <input type="hidden" name="authors" value='{{ authors | join(", ") }}'>
+                    {{ authors | join(", ") }}
                   {% endif %}
-                  <input type="hidden" name="owner_id" value="{{ owner_id }}">
-                  <input type="hidden" name="current_holder_id" value="">
-                  <input type="hidden" name="comment" value="">
-                  <input type="submit" class="btn btn-info" value="Ajouter">
-                </form>
-              </div>
+                </i>
+              </h5>
+              <p class="card-text">
+                {% if let Some(description) = book.volume_info.description %}
+                  {{ description | truncate(300) }},
+                {% endif %}
+              </p>
+              <form method="post" action="{{ router.create_book_path() }}">
+                <input type="hidden" name="title" value="{{ book.volume_info.title }}">
+                {% if let Some(description) = book.volume_info.description %}
+                  <input type="hidden" name="description" value="{{ description }}">
+                {% endif %}
+                {% if let Some(authors) = book.volume_info.authors %}
+                  <input type="hidden" name="authors" value='{{ authors | join(", ") }}'>
+                {% endif %}
+                <input type="hidden" name="owner_id" value="{{ owner_id }}">
+                <input type="hidden" name="current_holder_id" value="">
+                <input type="hidden" name="comment" value="">
+                <input type="submit" class="btn btn-info" value="Ajouter">
+              </form>
             </div>
           </div>
         </div>
-      {% endfor %}
-    {% else %}
-      {% call cards::card() %}
-        Oups il y a eu un probleme
-      {% endcall %}
-    {% endif %}
+      </div>
+    {% endfor %}
   {% else %}
     {% call cards::card() %}
       Oups il y a eu un probleme
