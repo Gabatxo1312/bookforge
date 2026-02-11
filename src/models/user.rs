@@ -1,5 +1,4 @@
 use crate::models::book;
-use crate::routes::book::BookForm;
 use crate::routes::user::IndexQuery;
 use crate::routes::user::UserForm;
 use crate::state::AppState;
@@ -112,48 +111,26 @@ impl UserOperator {
     /// Before deleting the user, you must search for all the books they own in order to delete them beforehand,
     /// then search for all the books they have borrowed in order to update the current holder to None.
     pub async fn delete(&self, user_id: i32) -> Result<DeleteResult, UserError> {
-        // get all
-        let owner_books = book::BookOperator::new(self.state.clone())
-            .find_all_by_owner(user_id)
-            .await
-            .context(BookSnafu)?;
-
-        // Delete all book with owner_id = current_user
-        for owner_book in owner_books {
-            book::BookOperator::new(self.state.clone())
-                .delete(owner_book.id)
-                .await
-                .context(BookSnafu)?;
-        }
-
-        let current_holder_books = book::BookOperator::new(self.state.clone())
-            .find_all_by_current_holder(user_id)
-            .await
-            .context(BookSnafu)?;
-
-        // Update all book with current Holder = current user
-        for current_holder_book in current_holder_books {
-            let form = BookForm {
-                title: current_holder_book.title,
-                authors: current_holder_book.authors,
-                owner_id: current_holder_book.owner_id,
-                description: current_holder_book.description,
-                comment: current_holder_book.comment,
-                current_holder_id: None,
-            };
-
-            book::BookOperator::new(self.state.clone())
-                .update(current_holder_book.id, form)
-                .await
-                .context(BookSnafu)?;
-        }
-
-        let user: Option<Model> = Entity::find_by_id(user_id)
-            .one(&self.state.db)
+        // Delete all books
+        book::Entity::delete_many()
+            .filter(book::Column::OwnerId.eq(user_id))
+            .exec(&self.state.db)
             .await
             .context(DBSnafu)?;
-        let user: Model = user.unwrap();
 
-        user.delete(&self.state.db).await.context(DBSnafu)
+        book::Entity::update_many()
+            .col_expr(
+                book::Column::CurrentHolderId,
+                Expr::value(sea_orm::Value::Int(None)),
+            )
+            .filter(book::Column::CurrentHolderId.eq(user_id))
+            .exec(&self.state.db)
+            .await
+            .context(DBSnafu)?;
+
+        Entity::delete_by_id(user_id)
+            .exec(&self.state.db)
+            .await
+            .context(DBSnafu)
     }
 }
