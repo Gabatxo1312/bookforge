@@ -21,6 +21,9 @@ pub struct Model {
     pub authors: String,
     pub description: Option<String>,
     pub comment: Option<String>,
+    pub publisher: Option<String>,
+    pub published_date: Option<String>,
+    pub page_count: Option<u16>,
     pub owner_id: i32,
     #[sea_orm(belongs_to, relation_enum = "Owner", from = "owner_id", to = "id")]
     pub owner: HasOne<super::user::Entity>,
@@ -143,6 +146,9 @@ impl BookOperator {
             current_holder_id: Set(form.current_holder_id),
             description: Set(form.description.clone()),
             comment: Set(form.comment.clone()),
+            page_count: Set(form.page_count),
+            publisher: Set(form.publisher.clone()),
+            published_date: Set(form.published_date.clone()),
             ..Default::default()
         };
 
@@ -165,6 +171,9 @@ impl BookOperator {
             book.current_holder_id = Set(form.current_holder_id);
             book.description = Set(form.description.clone());
             book.comment = Set(form.comment.clone());
+            book.page_count = Set(form.page_count);
+            book.publisher = Set(form.publisher.clone());
+            book.published_date = Set(form.published_date.clone());
 
             book.update(&self.state.db).await.context(DBSnafu)
         } else {

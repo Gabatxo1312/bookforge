@@ -42,6 +42,10 @@
         <option value="{{ option.id }}">{{ option.name }}</option>
       {% endcall %}
 
+      {{ form_helpers::input("page_count", t!("book.attributes.page_count"), type = "number", is_required = false, placeholder = "Ex: 403") }}
+      {{ form_helpers::input("publisher", t!("book.attributes.publisher"), is_required = false, placeholder = "Ex: Flammarion") }}
+      {{ form_helpers::input("published_date", t!("book.attributes.published_date"), is_required = false, placeholder = "Ex: 1964 ou 15/02/1887") }}
+
       {{ form_helpers::textarea("description", t!("book.attributes.description"), rows = 5, is_required = false, placeholder = "Ex: Je m’appelle Fatima Daas. Je suis la mazoziya, la petite dernière. Celle à laquelle on ne s’est pas préparé. Française d’origine algérienne.") }}
 
       {{ form_helpers::textarea("comment", t!("book.attributes.comment"), rows = 3, is_required = false, placeholder = "Ex: I recommend it, it's great!") }}

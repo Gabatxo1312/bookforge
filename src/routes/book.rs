@@ -193,6 +193,10 @@ pub struct BookForm {
     pub owner_id: i32,
     pub description: Option<String>,
     pub comment: Option<String>,
+    pub publisher: Option<String>,
+    pub published_date: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub page_count: Option<u16>,
     #[serde_as(as = "NoneAsEmptyString")]
     pub current_holder_id: Option<i32>,
 }
@@ -350,6 +354,9 @@ pub async fn download_csv(
         "Title",
         "Author(s)",
         "Description",
+        "Page Count",
+        "Publisher",
+        "Published Date",
         "Owner",
         "Current Holder",
         "Comment",
@@ -378,6 +385,9 @@ pub async fn download_csv(
             book.title,
             book.authors,
             book.description.unwrap_or_default(),
+            book.page_count.map(|c| c.to_string()).unwrap_or_default(),
+            book.publisher.unwrap_or_default(),
+            book.published_date.unwrap_or_default(),
             owner_format,
             current_holder,
             book.comment.unwrap_or_default(),

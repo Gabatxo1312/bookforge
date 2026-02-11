@@ -43,6 +43,16 @@
                   {% endif %}
                 </i>
               </h5>
+              {% if let Some(publisher) = book.volume_info.publisher %}
+                <p>
+                  Publisher: {{ publisher }}
+                </p>
+              {% endif %}
+              {% if let Some(published_date) = book.volume_info.published_date %}
+                <p>
+                  Date de publication: {{ published_date }}
+                </p>
+              {% endif %}
               <p class="card-text">
                 {% if let Some(description) = book.volume_info.description %}
                   {{ description | truncate(300) }},
@@ -52,9 +62,20 @@
                 <input type="hidden" name="title" value="{{ book.volume_info.title }}">
                 {% if let Some(description) = book.volume_info.description %}
                   <input type="hidden" name="description" value="{{ description }}">
+                {% else %}
+                  <input type="hidden" name="description" value="-">
                 {% endif %}
                 {% if let Some(authors) = book.volume_info.authors %}
                   <input type="hidden" name="authors" value='{{ authors | join(", ") }}'>
+                {% endif %}
+                {% if let Some(page_count) = book.volume_info.page_count %}
+                  <input type="hidden" name="page_count" value='{{ page_count }}'>
+                {% endif %}
+                {% if let Some(publisher) = book.volume_info.publisher %}
+                  <input type="hidden" name="publisher" value='{{ publisher }}'>
+                {% endif %}
+                {% if let Some(published_date) = book.volume_info.published_date %}
+                  <input type="hidden" name="published_date" value='{{ published_date }}'>
                 {% endif %}
                 <input type="hidden" name="owner_id" value="{{ owner_id }}">
                 <input type="hidden" name="current_holder_id" value="">

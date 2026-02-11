@@ -58,6 +58,9 @@ book:
     isbn: ISBN
     current_holder: Current holder
     comment: Comment
+    page_count: Page count
+    publisher: Publisher
+    published_date: Published date
 
   index:
     title_tag: Books list | BookForge

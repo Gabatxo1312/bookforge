@@ -66,6 +66,36 @@
       </div>
 
       <div class="mb-3">
+        <label for="page_count" class="form-label">{{ t!("book.attributes.page_count") }}</label>
+          {% match book.page_count %}
+          {% when Some with (page_count) %}
+            <input type="number" name="page_count" value="{{ page_count }}" class="form-control">
+          {% when None %}
+            <input type="number" name="page_count" class="form-control">
+          {% endmatch %}
+      </div>
+
+      <div class="mb-3">
+        <label for="publisher" class="form-label">{{ t!("book.attributes.publisher") }}</label>
+          {% match book.publisher %}
+          {% when Some with (publisher) %}
+            <input type="text" name="publisher" value="{{ publisher }}" class="form-control">
+          {% when None %}
+            <input type="text" name="publisher" class="form-control">
+          {% endmatch %}
+      </div>
+
+      <div class="mb-3">
+        <label for="published_date" class="form-label">{{ t!("book.attributes.published_date") }}</label>
+          {% match book.published_date %}
+          {% when Some with (published_date) %}
+            <input type="text" name="published_date" value="{{ published_date }}" class="form-control">
+          {% when None %}
+            <input type="text" name="published_date" class="form-control">
+          {% endmatch %}
+      </div>      
+
+      <div class="mb-3">
         <label class="form-label" for="comment">{{ t!("book.attributes.comment") }}</label>
         {% match book.comment %}
         {% when Some with (comment) %}

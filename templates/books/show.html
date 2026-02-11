@@ -24,6 +24,27 @@
         {{ fields::field(t!("book.attributes.description"), "-") }}
       {% endmatch %}
 
+      {% match book.page_count %}
+      {% when Some with (page_count) %}
+        {{ fields::field(t!("book.attributes.page_count"), page_count) }}
+      {% when None %}
+        {{ fields::field(t!("book.attributes.page_count"), "-") }}
+      {% endmatch %}
+      
+      {% match book.publisher %}
+      {% when Some with (publisher) %}
+        {{ fields::field(t!("book.attributes.publisher"), publisher) }}
+      {% when None %}
+        {{ fields::field(t!("book.attributes.publisher"), "-") }}
+      {% endmatch %}
+      
+      {% match book.published_date %}
+      {% when Some with (published_date) %}
+        {{ fields::field(t!("book.attributes.published_date"), published_date) }}
+      {% when None %}
+        {{ fields::field(t!("book.attributes.published_date"), "-") }}
+      {% endmatch %}
+
       <h5 class="mt-50px fw-bold text-decoration-underline">{{ t!("book.show.user_details") }}</h5>
       {{ fields::field(t!("book.attributes.owner"), owner.name) }}
 

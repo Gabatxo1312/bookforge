@@ -54,4 +54,7 @@ pub enum Book {
     Comment,
     OwnerId,
     CurrentHolderId,
+    PageCount,
+    Publisher,
+    PublishedDate,
 }

@@ -50,6 +50,9 @@ book:
     current_holder: Détenteur.ice actuel.le
     comment: Commentaire
     isbn: Numero ISBN
+    page_count: Nombre de pages
+    publisher: Éditeur
+    published_date: Date de publication
   index:
     title_tag: Liste des livres | BookForge
     title: Tous les livres
