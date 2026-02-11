@@ -18,8 +18,20 @@
             <div class="col-md-2 text-center">
               {% if let Some(image_links) = book.volume_info.image_links %}
                 {% if let Some(thumbnail) = image_links.thumbnail %}
-                  <img src="{{ thumbnail }}" />
+                  <img class="d-none d-md-block w-100" src="{{ thumbnail }}" />
+                {% else %}
+                  <div class="book-cover d-none d-md-block ">
+                    <div class="book-placeholder">
+                      ?
+                    </div>
+                  </div>
                 {% endif %}
+              {% else %}
+                <div class="book-cover d-none d-md-block">
+                  <div class="book-placeholder">
+                    ?
+                  </div>
+                </div>
               {% endif %}
             </div>
             <div class="col-md-9">
