@@ -4,7 +4,7 @@ use askama::Template;
 use askama_web::WebTemplate;
 use axum::{
     Form,
-    extract::{Path, Query, State},
+    extract::{Path, Query},
     response::Redirect,
 };
 use serde::Deserialize;
@@ -18,7 +18,7 @@ use crate::{
     },
     routes::router::Router,
     state::{
-        AppState,
+        context::AppStateContext,
         error::{AppStateError, BookSnafu, UserSnafu},
     },
 };
@@ -49,15 +49,15 @@ pub struct IndexQuery {
 }
 
 pub async fn index(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Query(query): Query<IndexQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let users = UserOperator::new(state.clone())
+    let users = UserOperator::new(context.state.clone())
         .all_filtered(query.clone())
         .await
         .context(UserSnafu)?;
 
-    let books = BookOperator::new(state.clone())
+    let books = BookOperator::new(context.state.clone())
         .all()
         .await
         .context(BookSnafu)?;
@@ -88,9 +88,7 @@ pub async fn index(
     Ok(UsersIndexTemplate {
         users_with_books_number: result,
         query,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
@@ -100,40 +98,40 @@ pub struct UserForm {
 }
 
 pub async fn create(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Form(form): Form<UserForm>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _ = UserOperator::new(state)
+    let _ = UserOperator::new(context.state)
         .create(form)
         .await
         .context(UserSnafu)?;
 
-    Ok(Redirect::to("/users"))
+    Ok(Redirect::to(&context.router.index_user_path()))
 }
 
 pub async fn update(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
     Form(form): Form<UserForm>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _ = UserOperator::new(state)
+    let _ = UserOperator::new(context.state)
         .update(id, form)
         .await
         .context(UserSnafu)?;
 
-    Ok(Redirect::to("/users"))
+    Ok(Redirect::to(&context.router.index_user_path()))
 }
 
 pub async fn delete(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _user = UserOperator::new(state)
+    let _user = UserOperator::new(context.state)
         .delete(id)
         .await
         .context(UserSnafu)?;
 
-    Ok(Redirect::to("/users"))
+    Ok(Redirect::to(&context.router.index_user_path()))
 }
 
 #[derive(Template, WebTemplate)]
@@ -144,19 +142,17 @@ struct EditTemplate {
 }
 
 pub async fn edit(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let user = UserOperator::new(state.clone())
+    let user = UserOperator::new(context.state.clone())
         .find_by_id(id)
         .await
         .context(UserSnafu)?;
 
     Ok(EditTemplate {
         user,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
@@ -166,10 +162,8 @@ struct NewTemplate {
     router: Router,
 }
 
-pub async fn new(State(state): State<AppState>) -> impl axum::response::IntoResponse {
+pub async fn new(context: AppStateContext) -> impl axum::response::IntoResponse {
     NewTemplate {
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     }
 }

@@ -7,6 +7,7 @@ use sea_orm_migration::MigratorTrait;
 
 pub mod api_config;
 pub mod config;
+pub mod context;
 pub mod error;
 pub mod listener;
 

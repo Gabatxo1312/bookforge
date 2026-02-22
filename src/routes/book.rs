@@ -5,7 +5,7 @@ use askama_web::WebTemplate;
 use axum::{
     Form,
     body::Body,
-    extract::{Path, Query, State},
+    extract::{Path, Query},
     response::{IntoResponse, Redirect, Response},
 };
 use csv::Writer;
@@ -17,16 +17,16 @@ use snafu::prelude::*;
 use crate::{
     models::book::Model as BookModel,
     routes::router::Router,
-    state::error::{CSVSnafu, GoogleBookSnafu},
+    state::{
+        context::AppStateContext,
+        error::{CSVSnafu, GoogleBookSnafu},
+    },
 };
 use crate::{models::user::Model as UserModel, state::error::IOSnafu};
 
 use crate::{
     models::{book::BookOperator, user::UserOperator},
-    state::{
-        AppState,
-        error::{AppStateError, BookSnafu, UserSnafu},
-    },
+    state::error::{AppStateError, BookSnafu, UserSnafu},
 };
 
 // Book list with the owner and the current holder inside
@@ -64,7 +64,7 @@ struct BookIndexTemplate {
 }
 
 pub async fn index(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Query(query): Query<IndexQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
     let page: u64 = query
@@ -73,13 +73,13 @@ pub async fn index(
         .unwrap_or(1);
 
     // Get all Users
-    let users = UserOperator::new(state.clone())
+    let users = UserOperator::new(context.state.clone())
         .all()
         .await
         .context(UserSnafu)?;
 
     // Get all Book filtered with query
-    let books_paginate = BookOperator::new(state.clone())
+    let books_paginate = BookOperator::new(context.state.clone())
         .all_paginate(page, Some(query.clone()))
         .await
         .context(BookSnafu)?;
@@ -133,9 +133,7 @@ pub async fn index(
         current_page: books_paginate.current_page,
         total_page: books_paginate.total_page,
         base_query,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
@@ -149,15 +147,15 @@ struct ShowBookTemplate {
 }
 
 pub async fn show(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let book = BookOperator::new(state.clone())
+    let book = BookOperator::new(context.state.clone())
         .find_by_id(id)
         .await
         .context(BookSnafu)?;
 
-    let owner = UserOperator::new(state.clone())
+    let owner = UserOperator::new(context.state.clone())
         .find_by_id(book.owner_id)
         .await
         .context(UserSnafu)?;
@@ -165,7 +163,7 @@ pub async fn show(
     let current_holder: Option<UserModel> = if let Some(current_holder_id) = book.current_holder_id
     {
         Some(
-            UserOperator::new(state.clone())
+            UserOperator::new(context.state)
                 .find_by_id(current_holder_id)
                 .await
                 .context(UserSnafu)?,
@@ -178,9 +176,7 @@ pub async fn show(
         book,
         owner,
         current_holder,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
@@ -202,15 +198,15 @@ pub struct BookForm {
 }
 
 pub async fn create(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Form(form): Form<BookForm>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _ = BookOperator::new(state)
+    let _ = BookOperator::new(context.state)
         .create(form)
         .await
         .context(BookSnafu)?;
 
-    Ok(Redirect::to("/").into_response())
+    Ok(Redirect::to(&context.router.root_path()).into_response())
 }
 
 #[derive(Template, WebTemplate)]
@@ -221,18 +217,16 @@ struct NewBookTemplate {
 }
 
 pub async fn new(
-    State(state): State<AppState>,
+    context: AppStateContext,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let users = UserOperator::new(state.clone())
+    let users = UserOperator::new(context.state.clone())
         .all()
         .await
         .context(UserSnafu)?;
 
     Ok(NewBookTemplate {
         users,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
@@ -245,14 +239,14 @@ struct EditBookTemplate {
 }
 
 pub async fn edit(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let users = UserOperator::new(state.clone())
+    let users = UserOperator::new(context.state.clone())
         .all()
         .await
         .context(UserSnafu)?;
-    let book = BookOperator::new(state.clone())
+    let book = BookOperator::new(context.state.clone())
         .find_by_id(id)
         .await
         .context(BookSnafu)?;
@@ -260,23 +254,21 @@ pub async fn edit(
     Ok(EditBookTemplate {
         users,
         book,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
 pub async fn update(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
     Form(form): Form<BookForm>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _ = BookOperator::new(state)
+    let _ = BookOperator::new(context.state)
         .update(id, form)
         .await
         .context(BookSnafu)?;
 
-    Ok(Redirect::to(&format!("/books/{}", id)).into_response())
+    Ok(Redirect::to(&context.router.show_book_path(&id)).into_response())
 }
 
 #[derive(Template, WebTemplate)]
@@ -295,12 +287,10 @@ pub struct SearchForm {
 }
 
 pub async fn search(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Query(form): Query<SearchForm>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    println!("{:#?}", form);
-
-    let api_key = state.config.api_config.google_books_api_key;
+    let api_key = context.state.config.api_config.google_books_api_key;
     let client = GoogleBooks::new(Some(api_key.to_string()));
 
     let query = if let Some(authors) = form.authors {
@@ -316,35 +306,36 @@ pub async fn search(
     Ok(SearchBookTemplate {
         result,
         owner_id: form.owner_id,
-        router: Router {
-            base_path: state.config.base_path,
-        },
+        router: context.router,
     })
 }
 
 pub async fn delete(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Path(id): Path<i32>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let _ = BookOperator::new(state)
+    let _ = BookOperator::new(context.state)
         .delete(id)
         .await
         .context(BookSnafu)?;
 
-    Ok(Redirect::to("/").into_response())
+    Ok(Redirect::to(&context.router.root_path()).into_response())
 }
 
 /// Download CSV filter (no paginate) of all books
 pub async fn download_csv(
-    State(state): State<AppState>,
+    context: AppStateContext,
     Query(query): Query<IndexQuery>,
 ) -> Result<impl axum::response::IntoResponse, AppStateError> {
-    let books = BookOperator::new(state.clone())
+    let books = BookOperator::new(context.state.clone())
         .all_filtered(Some(query))
         .await
         .context(BookSnafu)?;
 
-    let users = UserOperator::new(state).all().await.context(UserSnafu)?;
+    let users = UserOperator::new(context.state)
+        .all()
+        .await
+        .context(UserSnafu)?;
 
     let users_by_id: HashMap<i32, UserModel> = users.into_iter().map(|u| (u.id, u)).collect();
 
@@ -404,6 +395,6 @@ pub async fn download_csv(
             .header("Content-Type", "text/csv")
             .body(Body::from(csv_bytes))
             .unwrap()),
-        Err(_) => Ok(Redirect::to("/").into_response()),
+        Err(_) => Ok(Redirect::to(&context.router.root_path()).into_response()),
     }
 }

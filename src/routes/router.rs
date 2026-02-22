@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Router {
     pub base_path: String,
 }
@@ -27,6 +27,10 @@ impl Router {
     }
 
     pub fn update_book_path(&self, id: &i32) -> String {
+        format!("{}/books/{}", &self.base_path, id)
+    }
+
+    pub fn show_book_path(&self, id: &i32) -> String {
         format!("{}/books/{}", &self.base_path, id)
     }
 
